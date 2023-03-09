@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { HomeComponent } from './home.component';
 
 @NgModule({
-  imports: [RouterModule, CommonModule, RouterModule],
+  imports: [RouterModule, CommonModule],
   declarations: [HomeComponent],
   providers: [],
   exports: [HomeComponent]
