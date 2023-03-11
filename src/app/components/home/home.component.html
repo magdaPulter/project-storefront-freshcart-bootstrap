@@ -30,7 +30,8 @@
                                     aria-labelledby="offcanvasNavbarLabel">
                                     <div class="offcanvas-header">
                                         <div class="offcanvas-title" id="offcanvasNavbarLabel">
-                                            <img src="/assets/images/logo/freshcart-logo.svg" alt="eCommerce HTML Template">
+                                            <img src="/assets/images/logo/freshcart-logo.svg"
+                                                alt="eCommerce HTML Template">
                                         </div>
                                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
                                             aria-label="Close"></button>
@@ -75,7 +76,18 @@
 
     <section class="my-lg-10 my-8">
         <div class="container">
-            <div class="row"></div>
+            <div class="row">
+                <div class="col-md-3 card card-product" *ngFor="let item of categories">
+                    <div class="card-body text-center">
+                        <a [routerLink]="'categories/' + item.id" class="text-dark">
+                            <img src="{{item.imageUrl}}" alt="product-image" class="mb-2">
+                            <br>
+                            {{item.name}}
+                        </a>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 
