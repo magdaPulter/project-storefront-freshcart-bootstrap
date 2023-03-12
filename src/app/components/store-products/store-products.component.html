@@ -1,0 +1,150 @@
+<ng-container *ngIf="categories$ | async as categories">
+    <ng-container *ngIf="oneStore$ | async as store">
+        <!-- header -->
+        <header>
+            <div class="bg-light py-1">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6 col-12 text-center text-md-start">
+                            <span> Super Value Deals - Save more with coupons</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navbar navbar-light py-lg-4 pt-3 px-0 pb-0">
+                <div class="container">
+                    <div class="row w-100 align-items-center g-lg-2 g-0">
+                        <div class="col-xxl-2 col-lg-3">
+                            <a class="navbar-brand d-none d-lg-block" routerLink="/"> <img
+                                    src="/assets/images/logo/freshcart-logo.svg" alt="eCommerce HTML Template">
+                            </a>
+                            <div class="d-flex justify-content-between w-100 d-lg-none">
+                                <a class="navbar-brand" routerLink="/">
+                                    <img src="/assets/images/logo/freshcart-logo.svg" alt="eCommerce HTML Template">
+                                </a>
+                                <div class="d-flex align-items-center lh-1">
+                                    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
+                                        data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                                        <span class="navbar-toggler-icon"></span>
+                                    </button>
+                                    <div class="offcanvas offcanvas-end col-6" tabindex="-1" id="offcanvasNavbar"
+                                        aria-labelledby="offcanvasNavbarLabel">
+                                        <div class="offcanvas-header">
+                                            <div class="offcanvas-title" id="offcanvasNavbarLabel">
+                                                <img src="/assets/images/logo/freshcart-logo.svg"
+                                                    alt="eCommerce HTML Template">
+                                            </div>
+                                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+                                                aria-label="Close">
+                                            </button>
+                                        </div>
+                                        <div class="offcanvas-body">
+                                            <ul class="navbar-nav flex-grow-1 pe-2">
+                                                <li *ngFor="let item of categories" class="nav-item">
+                                                    <a [routerLink]="'categories/' + item.id" class="nav-link">
+                                                        {{item.name}}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- categories -->
+        <div class="border-bottom pb-lg-4 pb-3">
+            <nav class="navbar navbar-expand-lg navbar-light navbar-default pt-0 pb-0 ">
+                <div class="container px-0 px-md-3 ">
+                    <div class="offcanvas offcanvas-start p-4 p-lg-0 ">
+                        <div class="d-flex justify-content-between align-items-center mb-2 d-block d-lg-none "> <a
+                                routerLink="/"><img src="/assets/images/logo/freshcart-logo.svg"
+                                    alt="eCommerce HTML Template"></a> <button type="button" class="btn-close"
+                                aria-label="Close"></button> </div>
+                        <div class="d-block"> </div>
+                        <ul class="nav">
+                            <li *ngFor="let item of categories" class="nav-item">
+                                <a [routerLink]="'categories/' + item.id" class="nav-link">
+                                    {{item.name}}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Store Section -->
+        <section class="my-lg-14 my-8">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 d-flex flex-column align-items-start">
+                        <div>
+                            <img src="{{store.logoUrl}}" alt="{{store.name}}"
+                                class="rounded-circle icon-shape icon-xxl">
+                        </div>
+                        <div class="mt-4">
+                            <h1 class="mb-1 h4">{{store.name}}</h1>
+                            <div class="small text-muted"> 
+                                <span>It's only {{store.distanceInMeters/1000 | number: '1.0-1'}} away from You! </span> 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="bg-light  ps-md-10 ps-6 rounded">
+                            <div class="d-flex justify-content-between">
+                                <div class="mt-5">
+                                    <h1 class="mb-1 h4">{{store.name}}</h1>
+                                    <div class="small text-muted mb-3">
+                                        <span>Whatever the occasion, we have got you covered</span>
+                                    </div>
+                                    <form [formGroup]="form">
+                                        <div  class="d-flex input-group">
+                                            <input class="form-control rounded" type="search" formControlName="search" placeholder="{{store.name}}">
+                                            <span class="input-group-append">
+                                                <button class="btn bg-white border border-start-0 ms-n10 rounded-0 rounded-end">
+                                                    <svg class="" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        </div>              
+                                    </form>
+                                </div>
+                                <div>
+                                    <img src="assets/images/svg-graphics/store-graphics.svg">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products in Store-->
+        <section class="my-lg-14 my-8">
+            <div class="container">
+                <h3 class="mb-5">{{store.name}} products</h3>
+                <div class="row ">
+                    <div *ngFor="let item of productsInStore$ | async" class="col">
+                        <a class="text-decoration-none text-inherit">
+                            <div class="text-center py-8">
+                                <img src="{{item.imageUrl}}" [alt]="" class="mb-3">
+                                <div class="text-truncate">{{item.name}}</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </ng-container>
+</ng-container>
+
+
+

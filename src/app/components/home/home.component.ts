@@ -18,10 +18,9 @@ import { ProductQueryModel } from 'src/app/query-models/product.query-model';
 export class HomeComponent {
   readonly categories$: Observable<CategoryModel[]> = this._categoryService.getAll();
   readonly stores$: Observable<StoreModel[]> = this._storeService.getAll();
-  readonly products$: Observable<ProductModel[]> = this._productService.getAll();
 
-  readonly productsWithCategories$: Observable<ProductQueryModel[]> = combineLatest([
-    this.products$,
+  readonly products$: Observable<ProductQueryModel[]> = combineLatest([
+    this._productService.getAll(),
     this.categories$
   ]).pipe(
     map(([products, categories]) => {
@@ -39,7 +38,7 @@ export class HomeComponent {
       })
     })
   )
-  readonly fruitsVegetables$: Observable<ProductQueryModel[]> = this.productsWithCategories$.pipe(
+  readonly fruitsVegetables$: Observable<ProductQueryModel[]> = this.products$.pipe(
     map((products) => {
       return products
       .filter(prod => prod.categoryName === 'Fruits & Vegetables')
@@ -47,7 +46,7 @@ export class HomeComponent {
       .sort((a,b) => a.featureValue < b.featureValue ? 1 : -1)
     })
   )
-    readonly snackMunchies$: Observable<ProductQueryModel[]> = this.productsWithCategories$.pipe(
+    readonly snackMunchies$: Observable<ProductQueryModel[]> = this.products$.pipe(
     map((products) => {
       return products
       .filter(prod =>  prod.categoryName === 'Snack & Munchies')
