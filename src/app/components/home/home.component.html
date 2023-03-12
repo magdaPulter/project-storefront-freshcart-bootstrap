@@ -102,16 +102,16 @@
                     <div class="col mx-2 card card-product " *ngFor="let item of fruitsVegetables$ | async">
                         <div class="card-body text-center">
                             <a class="text-dark">
-                                <img height="180px" src="{{item.imageUrl}}" alt="product-image" class="mb-2">                                
+                                <img height="180px" src="{{item.imageUrl}}" alt="product-image" class="mb-2">
                                 <div class="d-flex flex-column align-items-start mt-3">
                                     <h2 class="fs-6">{{item.name}}</h2>
-                                    <div> 
-                                        <span class="text-dark">{{item.price | currency: 'USD' }}</span> 
+                                    <div>
+                                        <span class="text-dark">{{item.price | currency: 'USD' }}</span>
                                     </div>
                                 </div>
                             </a>
                         </div>
-                    </div>              
+                    </div>
                 </div>
             </div>
         </section>
@@ -127,13 +127,13 @@
                                 <img height="180px" src="{{item.imageUrl}}" alt="product-image" class="mb-2">
                                 <div class="d-flex flex-column align-items-start mt-3">
                                     <h2 class="fs-6">{{item.name}}</h2>
-                                    <div> 
-                                        <span class="text-dark">{{ item.price | currency: 'USD' }}</span> 
+                                    <div>
+                                        <span class="text-dark">{{ item.price | currency: 'USD' }}</span>
                                     </div>
                                 </div>
                             </a>
                         </div>
-                    </div>              
+                    </div>
                 </div>
             </div>
         </section>
@@ -142,7 +142,11 @@
         <section class="my-lg-10 my-8">
             <div class="container">
                 <h3 class="mb-5">Stores</h3>
-                <h6>We have <span class="text-success">{{stores.length}}</span> vendors now</h6>
+                <div class="col-12">
+                    <div class="mb-4">
+                        <h6>We have  <span class="text-primary">{{stores.length}}</span> vendors now</h6>
+                    </div>
+                </div>
                 <div class="row g-3">
                     <div class=" col-md-4 card card-product" *ngFor="let item of stores">
                         <div class="card-body">
@@ -160,7 +164,7 @@
                 </div>
             </div>
         </section>
-        
+
         <!-- footer -->
         <footer class="footer">
             <div class="container">
