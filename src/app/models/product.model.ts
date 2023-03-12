@@ -3,5 +3,7 @@ export interface ProductModel {
   readonly price: number;
   readonly categoryId: string;
   readonly ratingValue: number;
+  readonly featureValue: number
   readonly id: string;
+  readonly imageUrl: string;
 }
