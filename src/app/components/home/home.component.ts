@@ -57,6 +57,5 @@ export class HomeComponent {
   )
 
   constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _productService: ProductService) {
-    this.fruitsVegetables$.subscribe(value => console.log(value))
   }
 }
