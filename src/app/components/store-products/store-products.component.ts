@@ -21,9 +21,11 @@ export class StoreProductsComponent {
   readonly activatedRouteParam$: Observable<Params> = this._activatedRoute.params
 
   readonly categories$: Observable<CategoryModel[]> = this._categoryService.getAll()
+  readonly stores$: Observable<StoreModel[]> = this._storeService.getAll();
+
   readonly oneStore$: Observable<StoreModel> = this.activatedRouteParam$.pipe(
     switchMap(data => this._storeService.getOne(data['storeId'])))
-   
+
   readonly form: FormGroup = new FormGroup({
     search: new FormControl('')
   });
@@ -31,15 +33,14 @@ export class StoreProductsComponent {
   readonly productsInStore$: Observable<ProductModel[]> = combineLatest([
     this._productService.getAll(),
     this.activatedRouteParam$,
-    this.form.valueChanges.pipe(startWith({search: ''}))
+    this.form.valueChanges.pipe(startWith({ search: '' }))
   ]).pipe(
     map(([products, params, formValue]) => {
       return products
-      .filter(product => product.storeIds.find(store => store === params['storeId']))
-      .filter(product => product.name.toLowerCase().includes(formValue.search.toLowerCase()))
+        .filter(product => product.storeIds.find(store => store === params['storeId']))
+        .filter(product => product.name.toLowerCase().includes(formValue.search.toLowerCase()))
     })
   )
-
 
   constructor(private _categoryService: CategoryService, private _activatedRoute: ActivatedRoute, private _storeService: StoreService, private _productService: ProductService) {
 
