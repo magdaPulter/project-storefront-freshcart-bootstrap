@@ -32,8 +32,7 @@ export class CategoryProductsComponent {
       return products.filter(product => product.categoryId === params['categoryId'])
     })
   )
- 
-  readonly ratingValues$: Observable<number[]> = of([1,2,3,4,5])
+
 
   constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService) {
   }
