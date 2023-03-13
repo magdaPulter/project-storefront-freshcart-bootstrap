@@ -102,8 +102,17 @@
                                     <h2 class="mb-0 fs-1">{{oneCategory.name}}</h2>
                                 </div>
                             </div>
-                            <div>
-                                <span class="text-dark">{{products.length}}</span> Products found
+                            <div class="d-flex justify-content-between">
+                                <div class="">
+                                    <span class="text-dark">{{products.length}}</span> Products found
+                                </div>
+                                <div>
+                                    <select class="form-select" (change)="selectOption($event)">
+                                        <option *ngFor="let item of sortingOrder$ | async" [value]="item" >
+                                            {{item}}
+                                        </option>
+                                    </select>
+                                </div>
                             </div>
                             <div *ngFor="let product of products" class="col"><a [routerLink]=""
                                     class="text-decoration-none text-inherit">
@@ -113,11 +122,11 @@
                                             <div class="align-self-center">
                                                 <p>{{oneCategory.name}}</p>
                                                 <h2 class="fs-6">{{product.name}}</h2>
-                                                <!-- <small class="text-warning"> <i *ngFor="let val of product.ratingValue"
+                                                <small class="text-warning"> <i *ngFor="let val of [1,1,0.5,0,0]"
                                                         class="bi"
                                                         [ngClass]="{'bi-star-fill': val === 1, 'bi-star': val === 0, 'bi-star-half': val === 0.5}">
                                                     </i>
-                                                </small> -->
+                                                </small>
                                                 <div>
                                                     <span class="text-dark">{{ product.price | currency: 'USD' }}</span>
                                                 </div>

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { combineLatest, Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { CategoryModel } from '../../models/category.model';
 import { StoreModel } from '../../models/store.model';
 import { ProductModel } from '../../models/product.model';
@@ -21,9 +21,14 @@ export class CategoryProductsComponent {
   readonly categories$: Observable<CategoryModel[]> = this._categoryService.getAll();
   readonly stores$: Observable<StoreModel[]> = this._storeService.getAll();
 
+  readonly sortingOrder$: Observable<string[]> = of(['Featured', 'Price Low to High', 'Price High to Low', 'Avg. Rating'])
+  
+  private _selectedOrderSubject: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>('');
+  public selectedOrder$: Observable<string | undefined> = this._selectedOrderSubject.asObservable();
+
   readonly oneCategory$: Observable<CategoryModel> = this.activatedRouteParams$.pipe(
     switchMap(data => this._categoryService.getOne(data['categoryId'])))
-  
+
   readonly products$: Observable<ProductModel[]> = combineLatest([
     this._productService.getAll(),
     this.activatedRouteParams$
@@ -34,6 +39,12 @@ export class CategoryProductsComponent {
   )
 
 
+  
+
   constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService) {
+  }
+
+  selectOption(option: any){
+    console.log(option)
   }
 }
