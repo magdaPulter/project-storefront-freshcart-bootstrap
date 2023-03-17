@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Params } from '@angular/router';
-import { Observable, combineLatest, of } from 'rxjs';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Observable, combineLatest, from, of } from 'rxjs';
 import { filter, map, startWith, switchMap } from 'rxjs/operators';
 import { CategoryModel } from '../../models/category.model';
 import { StoreModel } from '../../models/store.model';
@@ -27,17 +27,40 @@ export class CategoryProductsComponent {
     switchMap(data => this._categoryService.getOne(data['categoryId'])))
 
   readonly sortingValues$: Observable<string[]> = of(['Featured', 'Price Low to high', 'Price High to Low', 'Avg. Rating'])
-
   readonly selectForm: FormGroup = new FormGroup({
-    selectedSortingValue: new FormControl('Featured') 
-    });
+    selectedSortingValue: new FormControl('Featured')
+  });
+
+  readonly limitButtons$: Observable<number[]> = of([5, 10, 15])
+  readonly queryParams$: Observable<Params> = this._activatedRoute.queryParams;
+  readonly limit$: Observable<number> = this.queryParams$.pipe(
+    map((queryParams) => queryParams['limit'] ? +queryParams['limit'] : 5))
+  readonly pagination$: Observable<number> = this.queryParams$.pipe(
+    map((queryParams) => queryParams['pagination'] ? queryParams['pagination'] : 1)
+  )
+
+  readonly paginationButtons$: Observable<number[]> = combineLatest([
+    this._productService.getAll(),
+    this.queryParams$
+  ]).pipe(
+    map(([products, queryParams]) => {
+      if (!queryParams['limit']) {
+        return [1]
+      }
+      return Array.from(Array(Math.floor((products.length) / (queryParams['limit'])))
+        .keys()).map((n) => n + 1)
+    })
+  )
+
 
   readonly products$: Observable<ProductsWithRatingQueryModel[]> = combineLatest([
     this._productService.getAll(),
     this.activatedRouteParams$,
-    this.selectForm.valueChanges.pipe(startWith({selectedSortingValue: ''}))
+    this.selectForm.valueChanges.pipe(startWith({ selectedSortingValue: '' })),
+    this.limit$,
+    this.pagination$
   ]).pipe(
-    map(([products, params, sortValues]) => {
+    map(([products, params, sortValues, limit, pagination]) => {
       return products
         .filter(product => product.categoryId === params['categoryId'])
 
@@ -52,8 +75,8 @@ export class CategoryProductsComponent {
             ratingValueArr: this._ratingMap(product.ratingValue)
           }
         })
-        .sort((a,b) => {
-          if(sortValues.selectedSortingValue === 'Featured'){
+        .sort((a, b) => {
+          if (sortValues.selectedSortingValue === 'Featured') {
             return a.featureValue < b.featureValue ? 1 : -1
           }
           if (sortValues.selectedSortingValue === 'Price Low to high') {
@@ -64,6 +87,7 @@ export class CategoryProductsComponent {
           }
           return a.ratingValue < b.ratingValue ? 1 : -1
         })
+        .slice(((pagination - 1) * limit), limit * pagination)
     })
   )
 
@@ -79,9 +103,22 @@ export class CategoryProductsComponent {
 
 
 
-  constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService) {
+  constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService, private _router: Router) {
 
   }
 
+  onLimitButtonClicked(limitButton: number) {
+    this._router.navigate(
+      [],
+      { queryParams: { limit: limitButton }, queryParamsHandling: 'merge' }
+    )
+  }
+
+  onPaginationButtonClicked(paginationButton: number) {
+    this._router.navigate(
+      [],
+      { queryParams: { pagination: paginationButton }, queryParamsHandling: 'merge' }
+    )
+  }
 
 }
