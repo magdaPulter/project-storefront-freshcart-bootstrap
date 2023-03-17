@@ -52,15 +52,20 @@ export class CategoryProductsComponent {
     })
   )
 
+  readonly filterByPrice: FormGroup = new FormGroup({
+    priceFrom: new FormControl(),
+    priceTo: new FormControl()
+  });
 
   readonly products$: Observable<ProductsWithRatingQueryModel[]> = combineLatest([
     this._productService.getAll(),
     this.activatedRouteParams$,
     this.selectForm.valueChanges.pipe(startWith({ selectedSortingValue: '' })),
     this.limit$,
-    this.pagination$
+    this.pagination$,
+    this.filterByPrice.valueChanges.pipe(startWith({ priceFrom: 0, priceTo: 1000 }))
   ]).pipe(
-    map(([products, params, sortValues, limit, pagination]) => {
+    map(([products, params, sortValues, limit, pagination, filterPriceValue]) => {
       return products
         .filter(product => product.categoryId === params['categoryId'])
 
@@ -87,6 +92,7 @@ export class CategoryProductsComponent {
           }
           return a.ratingValue < b.ratingValue ? 1 : -1
         })
+        .filter(product => product.price >= filterPriceValue.priceFrom && product.price <= filterPriceValue.priceTo)
         .slice(((pagination - 1) * limit), limit * pagination)
     })
   )
@@ -104,7 +110,6 @@ export class CategoryProductsComponent {
 
 
   constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService, private _router: Router) {
-
   }
 
   onLimitButtonClicked(limitButton: number) {
@@ -120,5 +125,6 @@ export class CategoryProductsComponent {
       { queryParams: { pagination: paginationButton }, queryParamsHandling: 'merge' }
     )
   }
+
 
 }

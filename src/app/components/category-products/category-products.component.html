@@ -5,21 +5,37 @@
             <section class="my-lg-14 my-8">
                 <div class="container">
                     <div class="row g-2" *ngIf="oneCategory$ | async as oneCategory">
-                        <ul class="col-md-3 list-group list-group-flush">
-                            <h5 class="mb-5">{{oneCategory.name}} </h5>
-                            <li *ngFor="let category of categories" class="list-group-item ">
-                                <a class="text-dark d-flex justify-content-between align-items-center" role="button"
-                                    [routerLink]="'/categories/' + category.id">
-                                    {{category.name}}
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
-                                        class="bi bi-chevron-right" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd"
-                                            d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
-                                    </svg>
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="col-md-9 ">
+
+                        <!-- left column -->
+                        <div class="col-md-3 ">
+                            <ul class="list-group list-group-flush">
+                                <h5 class="mb-5">{{oneCategory.name}} </h5>
+                                <li *ngFor="let category of categories" class="list-group-item ">
+                                    <a class="text-dark d-flex justify-content-between align-items-center" role="button"
+                                        [routerLink]="'/categories/' + category.id">
+                                        {{category.name}}
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                            fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd"
+                                                d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+                                        </svg>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <div class="mt-5">
+                                <h5 class="mb-5">Price</h5>
+                                <form [formGroup]="filterByPrice">
+                                    <input class="form-control mt-3" type="text" formControlName="priceFrom" placeholder="Price From">
+                                    <input class="form-control mt-3" type="text" formControlName="priceTo" placeholder="Price To"> 
+                                    <!-- <input type="submit">           -->
+                                </form>
+                            </div>
+                        </div>
+
+
+                        <!-- right column -->
+                        <div class="col-md-9">
                             <div class="align-self-start card mb-4 bg-light border-0">
                                 <div class="card-body p-9">
                                     <h2 class="mb-0 fs-1">{{oneCategory.name}}</h2>
@@ -67,7 +83,8 @@
                                     <h2 class="fs-6">Limit</h2>
                                     <ul class="pagination">
                                         <li class="page-item" *ngFor="let item of limitButtons$ | async">
-                                            <button type="button" class="btn btn-outline-primary" (click)="onLimitButtonClicked(item)">
+                                            <button type="button" class="btn btn-outline-primary"
+                                                (click)="onLimitButtonClicked(item)">
                                                 {{item}}
                                             </button>
                                         </li>
@@ -76,7 +93,8 @@
                                 <nav class="col-6">
                                     <h2 class="fs-6">Pagination</h2>
                                     <ul class="pagination">
-                                        <li class="page-item" *ngFor="let item of paginationButtons$ | async" (click)="onPaginationButtonClicked(item)">
+                                        <li class="page-item" *ngFor="let item of paginationButtons$ | async"
+                                            (click)="onPaginationButtonClicked(item)">
                                             <button type="button" class="btn btn-outline-primary">
                                                 {{item}}
                                             </button>
