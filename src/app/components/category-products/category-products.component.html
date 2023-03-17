@@ -1,7 +1,7 @@
 <ng-container *ngIf="categories$ | async as categories">
     <ng-container *ngIf="stores$ | async as stores">
         <ng-container *ngIf="products$ | async as products">
-           <!-- products section -->
+            <!-- products section -->
             <section class="my-lg-14 my-8">
                 <div class="container">
                     <div class="row g-2" *ngIf="oneCategory$ | async as oneCategory">
@@ -29,9 +29,9 @@
                                 <div class="">
                                     <span class="text-dark">{{products.length}}</span> Products found
                                 </div>
-                                <div>
-                                    <select class="form-select" (change)="selectOption($event)">
-                                        <option *ngFor="let item of sortingOrder$ | async" [value]="item" >
+                                <div [formGroup]="selectForm">
+                                    <select class="form-select" formControlName="selectedSortingValue">
+                                        <option *ngFor="let item of sortingValues$ | async" [value]="item" >
                                             {{item}}
                                         </option>
                                     </select>
@@ -45,13 +45,17 @@
                                             <div class="align-self-center">
                                                 <p>{{oneCategory.name}}</p>
                                                 <h2 class="fs-6">{{product.name}}</h2>
-                                                <small class="text-warning"> <i *ngFor="let val of [1,1,0.5,0,0]"
-                                                        class="bi"
+                                                <small class="text-warning">
+                                                    <i *ngFor="let val of product.ratingValueArr" class="bi"
                                                         [ngClass]="{'bi-star-fill': val === 1, 'bi-star': val === 0, 'bi-star-half': val === 0.5}">
                                                     </i>
+                                                    <span
+                                                        class="text-secondary">{{product.ratingValue}}({{product.ratingCount}})</span>
                                                 </small>
                                                 <div>
-                                                    <span class="text-dark">{{ product.price | currency: 'USD' }}</span>
+                                                    <span class="text-dark">
+                                                        {{ product.price | currency: 'USD' :'symbol': '1.0-0' }}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>

@@ -29,7 +29,7 @@
                                 <div class="d-flex flex-column align-items-start mt-3">
                                     <h2 class="fs-6">{{fruit.name}}</h2>
                                     <div>
-                                        <span class="text-dark">{{fruit.price | currency: 'USD' }}</span>
+                                        <span class="text-dark">{{fruit.price | currency: 'USD' :'symbol': '1.0-0' }}</span>
                                     </div>
                                 </div>
                             </a>
@@ -50,7 +50,7 @@
                                 <div class="d-flex flex-column align-items-start mt-3">
                                     <h2 class="fs-6">{{snack.name}}</h2>
                                     <div>
-                                        <span class="text-dark">{{ snack.price | currency: 'USD' }}</span>
+                                        <span class="text-dark">{{ snack.price | currency: 'USD' :'symbol': '1.0-0' }}</span>
                                     </div>
                                 </div>
                             </a>
@@ -76,8 +76,9 @@
                                     class="rounded-circle me-5">
                                 <div>
                                     <h2 class="fs-6">{{store.name}}</h2>
-                                    <span class="badge text-bg-light">{{store.distanceInMeters/1000 | number: '1.0-1'}}
-                                        km</span>
+                                    <span class="badge text-bg-light">
+                                        {{store.distanceInMeters/1000 | number: '1.0-1'}} km
+                                    </span>
                                 </div>
                             </a>
                         </div>

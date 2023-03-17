@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
-import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { Observable, combineLatest, of } from 'rxjs';
+import { filter, map, startWith, switchMap } from 'rxjs/operators';
 import { CategoryModel } from '../../models/category.model';
 import { StoreModel } from '../../models/store.model';
-import { ProductModel } from '../../models/product.model';
+import { ProductsWithRatingQueryModel } from '../../query-models/products-with-rating.query-model';
 import { CategoryService } from '../../services/category.service';
 import { StoreService } from '../../services/store.service';
 import { ProductService } from '../../services/product.service';
@@ -19,32 +20,68 @@ import { ProductService } from '../../services/product.service';
 export class CategoryProductsComponent {
   readonly activatedRouteParams$: Observable<Params> = this._activatedRoute.params
   readonly categories$: Observable<CategoryModel[]> = this._categoryService.getAll();
-  readonly stores$: Observable<StoreModel[]> = this._storeService.getAll();
+  readonly stores$: Observable<StoreModel[]> = this._storeService.getAll()
 
-  readonly sortingOrder$: Observable<string[]> = of(['Featured', 'Price Low to High', 'Price High to Low', 'Avg. Rating'])
-  
-  private _selectedOrderSubject: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>('');
-  public selectedOrder$: Observable<string | undefined> = this._selectedOrderSubject.asObservable();
 
   readonly oneCategory$: Observable<CategoryModel> = this.activatedRouteParams$.pipe(
     switchMap(data => this._categoryService.getOne(data['categoryId'])))
 
-  readonly products$: Observable<ProductModel[]> = combineLatest([
+  readonly sortingValues$: Observable<string[]> = of(['Featured', 'Price Low to high', 'Price High to Low', 'Avg. Rating'])
+
+  readonly selectForm: FormGroup = new FormGroup({
+    selectedSortingValue: new FormControl('Featured') 
+    });
+
+  readonly products$: Observable<ProductsWithRatingQueryModel[]> = combineLatest([
     this._productService.getAll(),
-    this.activatedRouteParams$
+    this.activatedRouteParams$,
+    this.selectForm.valueChanges.pipe(startWith({selectedSortingValue: ''}))
   ]).pipe(
-    map(([products, params]) => {
-      return products.filter(product => product.categoryId === params['categoryId'])
+    map(([products, params, sortValues]) => {
+      return products
+        .filter(product => product.categoryId === params['categoryId'])
+
+        .map(product => {
+          return {
+            name: product.name,
+            price: product.price,
+            imageUrl: product.imageUrl,
+            featureValue: product.featureValue,
+            ratingCount: product.ratingCount,
+            ratingValue: product.ratingValue,
+            ratingValueArr: this._ratingMap(product.ratingValue)
+          }
+        })
+        .sort((a,b) => {
+          if(sortValues.selectedSortingValue === 'Featured'){
+            return a.featureValue < b.featureValue ? 1 : -1
+          }
+          if (sortValues.selectedSortingValue === 'Price Low to high') {
+            return a.price > b.price ? 1 : -1
+          }
+          if (sortValues.selectedSortingValue === 'Price High to Low') {
+            return a.price < b.price ? 1 : -1
+          }
+          return a.ratingValue < b.ratingValue ? 1 : -1
+        })
     })
   )
 
+  private _ratingMap(ratingValue: number): number[] {
+    const initialArr = [1, 1, 1, 1, 1]
+    if (Number.isInteger(ratingValue)) {
+      return initialArr.fill(0, ratingValue)
+    }
+    const filledArray = initialArr.fill(0, ratingValue)
+    filledArray.splice(ratingValue, 1, 0.5)
+    return filledArray
+  }
 
-  
+
 
   constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService) {
+
   }
 
-  selectOption(option: any){
-    console.log(option)
-  }
+
 }
