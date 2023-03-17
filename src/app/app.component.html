@@ -110,12 +110,8 @@
                         <div class="row g-4">
                             <div class="col-12">
                                 <h6 class="mb-4">Get to know us</h6>
-                                <ul class="navbar-nav ">
-                                    <li class="nav-item mb-4">Category</li>
-                                    <li class="nav-item mb-4">About</li>
-                                    <li class="nav-item mb-4">Blog</li>
-                                    <li class="nav-item mb-4">Help Center</li>
-                                    <li class="nav-item mb-4">Our Value</li>
+                                <ul class="navbar-nav" *ngFor="let item of getToKnowUs$ | async">
+                                    <li class="nav-item mb-4">{{item}}</li>
                                 </ul>
                             </div>
                         </div>
