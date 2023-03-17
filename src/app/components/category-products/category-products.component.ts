@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { Observable, combineLatest, from, of } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, from, of } from 'rxjs';
 import { filter, map, startWith, switchMap } from 'rxjs/operators';
 import { CategoryModel } from '../../models/category.model';
 import { StoreModel } from '../../models/store.model';
@@ -57,15 +57,23 @@ export class CategoryProductsComponent {
     priceTo: new FormControl()
   });
 
+  readonly ratingValue$: Observable<number[]> = of([5, 4, 3, 2])
+  readonly ratingValueArray$: Observable<number[][]> = this.ratingValue$.pipe(
+    map((rating => rating.map(rate => this._ratingMap(rate)))))
+
+  private _ratingValueRadioSubject: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
+  public ratingValueRadio$: Observable<number[]> = this._ratingValueRadioSubject.asObservable();
+  
   readonly products$: Observable<ProductsWithRatingQueryModel[]> = combineLatest([
     this._productService.getAll(),
     this.activatedRouteParams$,
     this.selectForm.valueChanges.pipe(startWith({ selectedSortingValue: '' })),
     this.limit$,
     this.pagination$,
-    this.filterByPrice.valueChanges.pipe(startWith({ priceFrom: 0, priceTo: 1000 }))
+    this.filterByPrice.valueChanges.pipe(startWith({ priceFrom: 0, priceTo: 1000 })),
+    this.ratingValueRadio$
   ]).pipe(
-    map(([products, params, sortValues, limit, pagination, filterPriceValue]) => {
+    map(([products, params, sortValues, limit, pagination, filterPriceValue, ratingValueRadio]) => {
       return products
         .filter(product => product.categoryId === params['categoryId'])
 
@@ -94,8 +102,15 @@ export class CategoryProductsComponent {
         })
         .filter(product => product.price >= filterPriceValue.priceFrom && product.price <= filterPriceValue.priceTo)
         .slice(((pagination - 1) * limit), limit * pagination)
+        .filter((product) => {
+          if(ratingValueRadio.length === 0) {
+            return product
+          }
+          return Math.floor(product.ratingValue) === this._ratingArrMap(ratingValueRadio)
+        })
     })
   )
+
 
   private _ratingMap(ratingValue: number): number[] {
     const initialArr = [1, 1, 1, 1, 1]
@@ -107,9 +122,15 @@ export class CategoryProductsComponent {
     return filledArray
   }
 
-
+  private _ratingArrMap(array: number[]): number {
+    return array.reduce((acc, curr) =>  acc + curr, 0)
+  }
 
   constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService, private _router: Router) {
+  }
+
+  radioChange(rate: number[]) {
+    this._ratingValueRadioSubject.next(rate)
   }
 
   onLimitButtonClicked(limitButton: number) {
