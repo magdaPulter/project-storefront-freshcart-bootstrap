@@ -9,6 +9,7 @@ import { ProductsWithRatingQueryModel } from '../../query-models/products-with-r
 import { CategoryService } from '../../services/category.service';
 import { StoreService } from '../../services/store.service';
 import { ProductService } from '../../services/product.service';
+import { SortingValueQueryModel } from 'src/app/query-models/sorting-value.query-model';
 
 @Component({
   selector: 'app-category-products',
@@ -35,9 +36,8 @@ export class CategoryProductsComponent implements AfterViewInit {
     switchMap(data => this._categoryService.getOne(data['categoryId'])))
 
   readonly sortingValues$: Observable<string[]> = of(['Featured', 'Price Low to high', 'Price High to Low', 'Avg. Rating'])
-  readonly selectForm: FormGroup = new FormGroup({
-    selectedSortingValue: new FormControl('Featured')
-  });
+    readonly selectedSortingValue: FormControl =  new FormControl('Featured')
+  
 
   readonly limitButtons$: Observable<number[]> = of([5, 10, 15])
   readonly queryParams$: Observable<Params> = this._activatedRoute.queryParams;
@@ -85,7 +85,7 @@ export class CategoryProductsComponent implements AfterViewInit {
     this._productService.getAll(),
     this.stores$,
     this.activatedRouteParams$,
-    this.selectForm.valueChanges.pipe(startWith({ selectedSortingValue: '' })),
+    this.selectedSortingValue.valueChanges.pipe(startWith('')),
     this.limit$,
     this.pagination$,
     this.filterByPrice.valueChanges.pipe(startWith({ priceFrom: 0, priceTo: 100000 })),
@@ -113,23 +113,23 @@ export class CategoryProductsComponent implements AfterViewInit {
           }
         })
         .sort((a, b) => {
-          if (sortValues.selectedSortingValue === 'Featured') {
+          if (sortValues === 'Featured') {
             return a.featureValue < b.featureValue ? 1 : -1
           }
-          if (sortValues.selectedSortingValue === 'Price Low to high') {
+          if (sortValues === 'Price Low to high') {
             return a.price > b.price ? 1 : -1
           }
-          if (sortValues.selectedSortingValue === 'Price High to Low') {
+          if (sortValues === 'Price High to Low') {
             return a.price < b.price ? 1 : -1
           }
           return a.ratingValue < b.ratingValue ? 1 : -1
         })
         .filter(product => product.price >= filterPriceValue.priceFrom && product.price <= filterPriceValue.priceTo)
-        .slice(((pagination - 1) * limit), limit * pagination)
         .filter(product => ratingValueRadio.length !== 0 ? Math.floor(product.ratingValue) === this._ratingArrMap(ratingValueRadio) : true)
         .filter(product => checkboxValue.stores.size === 0 || 
            product.storeIds.find((valIs: string) => checkboxValue.stores.has(valIs)))
         .filter(product => searchStore !== '' ? product.storeNames.some(store => store?.toLowerCase().includes(searchStore?.toLowerCase())) : true)
+        .slice(((pagination - 1) * limit), limit * pagination)
     })
   )
 
