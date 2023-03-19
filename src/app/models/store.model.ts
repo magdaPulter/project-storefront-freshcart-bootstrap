@@ -3,4 +3,5 @@ export interface StoreModel {
   readonly logoUrl: string;
   readonly id: string;
   readonly distanceInMeters: number;
+  readonly tagIds: string[];
 }

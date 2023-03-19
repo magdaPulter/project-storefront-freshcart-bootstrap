@@ -1,11 +1,9 @@
 <ng-container *ngIf="categories$ | async as categories">
     <ng-container *ngIf="stores$ | async as stores">
         <ng-container *ngIf="products$ | async as products">
-            <!-- products section -->
             <section class="my-lg-14 my-8">
                 <div class="container">
                     <div class="row g-2" *ngIf="oneCategory$ | async as oneCategory">
-                        <!-- left column -->
                         <div class="col-md-3 ">
                             <ul class="list-group list-group-flush">
                                 <h5 class="mb-5">{{oneCategory.name}} </h5>
@@ -21,7 +19,21 @@
                                     </a>
                                 </li>
                             </ul>
-
+                            <div class="mt-5">
+                                <h5 class="mb-5">Stores</h5>
+                                <form class="mb-5">
+                                    <input class="form-control mt-3" type="text" [formControl]="searchStore"
+                                        placeholder="Search by store">
+                                </form>
+                                <form [formGroup]="storeForm">
+                                    <div *ngFor="let item of stores" class="form-check mb-2">
+                                        <input [id]="item" [value]="item.id" class="form-check-input" type="checkbox" [formControlName]="item.id">
+                                        <label [for]="item" class="form-check-label">
+                                            {{item.name}}
+                                        </label>
+                                    </div>
+                                </form>
+                            </div>
                             <div class="mt-5">
                                 <h5 class="mb-5">Price</h5>
                                 <form [formGroup]="filterByPrice">
@@ -33,19 +45,18 @@
                             </div>
                             <div class="mt-5">
                                 <h5 class="mb-5">Rating</h5>
-                                <div *ngFor="let rate of ratingValueArray$ | async" class="form-check mb-2" (click)="radioChange(rate)">
+                                <div *ngFor="let rate of ratingValueArray$ | async" class="form-check mb-2"
+                                    (click)="radioChange(rate)">
                                     <input [id]="rate" class="form-check-input" type="radio" name="rate">
                                     <label [for]="rate" class="form-check-label">
-                                        <small class="text-warning"> 
+                                        <small class="text-warning">
                                             <i *ngFor="let val of rate" class="bi"
                                                 [ngClass]="{'bi-star-fill': val === 1, 'bi-star': val === 0, 'bi-star-half': val === 0.5}"></i>
                                         </small>
                                     </label>
                                 </div>
-                               
                             </div>
                         </div>
-                        <!-- right column -->
                         <div class="col-md-9">
                             <div class="align-self-start card mb-4 bg-light border-0">
                                 <div class="card-body p-9">

@@ -1,6 +1,5 @@
 <ng-container *ngIf="categories$ | async as categories">
     <ng-container *ngIf="oneStore$ | async as store">
-        <!-- Store Section -->
         <section class="my-lg-14 my-8">
             <div class="container">
                 <div class="row">
@@ -46,7 +45,6 @@
                 </div>
             </div>
         </section>
-        <!-- Products in Store-->
         <section class="my-lg-14 my-8">
             <div class="container">
                 <h3 class="mb-5">{{store.name}} products</h3>

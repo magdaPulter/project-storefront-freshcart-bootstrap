@@ -7,6 +7,7 @@ import { CategoryService } from '../../services/category.service';
 import { StoreService } from '../../services/store.service';
 import { ProductService } from '../../services/product.service';
 import { ProductQueryModel } from 'src/app/query-models/product.query-model';
+import { StoreQueryModel } from 'src/app/query-models/store.query-model';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +18,27 @@ import { ProductQueryModel } from 'src/app/query-models/product.query-model';
 })
 export class HomeComponent {
   readonly categories$: Observable<CategoryModel[]> = this._categoryService.getAll();
-  readonly stores$: Observable<StoreModel[]> = this._storeService.getAll();
+  
+  readonly stores$: Observable<StoreQueryModel[]> = combineLatest([
+    this._storeService.getAll(),
+    this._storeService.getStoreTags()
+  ]).pipe(
+    map(([stores, tags]) => {
+      const tagMap = tags.reduce((acc, curr) => {
+        return {...acc, [curr.id]: curr.name}
+      }, {} as Record<string, string>)
+     return stores.map(store => {
+      return {
+         name: store.name,
+         id: store.id,
+         distanceInMeters: store.distanceInMeters,
+         logoUrl: store.logoUrl,
+         tagNames: store.tagIds.map(tIds => tagMap[tIds])
+      }
+     })
+    })
+  )
+
 
   readonly products$: Observable<ProductQueryModel[]> = combineLatest([
     this._productService.getAll(),

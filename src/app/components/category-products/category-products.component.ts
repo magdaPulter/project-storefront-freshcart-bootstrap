@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { BehaviorSubject, Observable, combineLatest, from, of } from 'rxjs';
-import { filter, map, startWith, switchMap } from 'rxjs/operators';
+import { filter, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { CategoryModel } from '../../models/category.model';
 import { StoreModel } from '../../models/store.model';
 import { ProductsWithRatingQueryModel } from '../../query-models/products-with-rating.query-model';
@@ -17,11 +17,19 @@ import { ProductService } from '../../services/product.service';
   encapsulation: ViewEncapsulation.Emulated,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CategoryProductsComponent {
+export class CategoryProductsComponent implements AfterViewInit {
+  readonly storeForm: FormGroup = new FormGroup({})
+
   readonly activatedRouteParams$: Observable<Params> = this._activatedRoute.params
   readonly categories$: Observable<CategoryModel[]> = this._categoryService.getAll();
-  readonly stores$: Observable<StoreModel[]> = this._storeService.getAll()
 
+  readonly stores$: Observable<StoreModel[]> = this._storeService.getAll().pipe(
+    tap((stores) => {
+      stores.forEach((store) => {
+        this.storeForm.addControl(store.id, new FormControl(false))
+      })
+    })
+  )
 
   readonly oneCategory$: Observable<CategoryModel> = this.activatedRouteParams$.pipe(
     switchMap(data => this._categoryService.getOne(data['categoryId'])))
@@ -63,25 +71,41 @@ export class CategoryProductsComponent {
 
   private _ratingValueRadioSubject: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   public ratingValueRadio$: Observable<number[]> = this._ratingValueRadioSubject.asObservable();
-  
+
+
+  readonly filterValuesCheckbox$: Observable<{stores: Set<string>}> = this.queryParams$.pipe(
+    map((queryParams) => ({
+      stores: new Set<string>(queryParams['stores'] === undefined ? [] : queryParams['stores'].split(','))
+    }))
+  )
+
+  readonly searchStore: FormControl = new FormControl('')
+ 
   readonly products$: Observable<ProductsWithRatingQueryModel[]> = combineLatest([
     this._productService.getAll(),
+    this.stores$,
     this.activatedRouteParams$,
     this.selectForm.valueChanges.pipe(startWith({ selectedSortingValue: '' })),
     this.limit$,
     this.pagination$,
-    this.filterByPrice.valueChanges.pipe(startWith({ priceFrom: 0, priceTo: 1000 })),
-    this.ratingValueRadio$
+    this.filterByPrice.valueChanges.pipe(startWith({ priceFrom: 0, priceTo: 100000 })),
+    this.ratingValueRadio$,
+    this.filterValuesCheckbox$,
+    this.searchStore.valueChanges.pipe(startWith(''))
   ]).pipe(
-    map(([products, params, sortValues, limit, pagination, filterPriceValue, ratingValueRadio]) => {
+    map(([products, stores, params, sortValues, limit, pagination, filterPriceValue, ratingValueRadio, checkboxValue, searchStore]) => {
+      const storeMap = stores.reduce((acc, curr) => {
+        return {...acc, [curr.id]: curr.name}
+      }, {} as Record<string, string>)
       return products
         .filter(product => product.categoryId === params['categoryId'])
-
         .map(product => {
           return {
             name: product.name,
             price: product.price,
             imageUrl: product.imageUrl,
+            storeIds: product.storeIds,
+            storeNames: product.storeIds.map(storeIds => storeMap[storeIds]),
             featureValue: product.featureValue,
             ratingCount: product.ratingCount,
             ratingValue: product.ratingValue,
@@ -102,15 +126,12 @@ export class CategoryProductsComponent {
         })
         .filter(product => product.price >= filterPriceValue.priceFrom && product.price <= filterPriceValue.priceTo)
         .slice(((pagination - 1) * limit), limit * pagination)
-        .filter((product) => {
-          if(ratingValueRadio.length === 0) {
-            return product
-          }
-          return Math.floor(product.ratingValue) === this._ratingArrMap(ratingValueRadio)
-        })
+        .filter(product => ratingValueRadio.length !== 0 ? Math.floor(product.ratingValue) === this._ratingArrMap(ratingValueRadio) : true)
+        .filter(product => checkboxValue.stores.size === 0 || 
+           product.storeIds.find((valIs: string) => checkboxValue.stores.has(valIs)))
+        .filter(product => searchStore !== '' ? product.storeNames.some(store => store?.toLowerCase().includes(searchStore?.toLowerCase())) : true)
     })
   )
-
 
   private _ratingMap(ratingValue: number): number[] {
     const initialArr = [1, 1, 1, 1, 1]
@@ -123,7 +144,32 @@ export class CategoryProductsComponent {
   }
 
   private _ratingArrMap(array: number[]): number {
-    return array.reduce((acc, curr) =>  acc + curr, 0)
+    return array.reduce((acc, curr) => acc + curr, 0)
+  }
+
+
+  ngAfterViewInit(): void {
+    this.filterByPrice.valueChanges.pipe(
+      tap((filterByPrice) =>  this._router.navigate(
+        [],
+        { queryParams: 
+          { 
+            priceFrom: filterByPrice.priceFrom,
+            priceTo: filterByPrice.priceTo 
+          }, queryParamsHandling: 'merge' }
+      ))
+    ).subscribe()
+   
+    this.storeForm.valueChanges.pipe(
+      map((filterValue) => Object.entries(filterValue)
+        .filter(([key, value]) => value)
+        .map(([key, value]) => key)),
+      tap((selectedValue) => selectedValue.length > 0 ? 
+         this._router.navigate([],
+          { queryParams: { stores: selectedValue.sort().join(',') }, queryParamsHandling: 'merge' }) 
+          : this._router.navigate([], { queryParams: {} })
+      )
+    ).subscribe()
   }
 
   constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService, private _router: Router) {
@@ -146,6 +192,4 @@ export class CategoryProductsComponent {
       { queryParams: { pagination: paginationButton }, queryParamsHandling: 'merge' }
     )
   }
-
-
 }
