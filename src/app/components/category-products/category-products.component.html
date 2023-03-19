@@ -67,8 +67,8 @@
                                 <div class="">
                                     <span class="text-dark">{{products.length}}</span> Products found
                                 </div>
-                                <div [formGroup]="selectForm">
-                                    <select class="form-select" formControlName="selectedSortingValue">
+                                <div >
+                                    <select class="form-select" [formControl]="selectedSortingValue">
                                         <option *ngFor="let item of sortingValues$ | async" [value]="item">
                                             {{item}}
                                         </option>
