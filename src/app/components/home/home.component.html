@@ -8,7 +8,6 @@
                         <a [routerLink]="'categories/' + category.id" class="text-dark">
                             <div class="card card-product">
                                 <div class="card-body text-center">
-
                                     <img src="{{category.imageUrl}}" alt="product-image" class="mb-2">
                                     <br>
                                     <h2 class="fs-6">{{category.name}}</h2>
@@ -23,7 +22,7 @@
             <div class="container">
                 <h3 class="mb-5">Fruits & Vegetables</h3>
                 <div class="row ">
-                    <div class="col mx-2 card card-product " *ngFor="let fruit of fruitsVegetables$ | async">
+                    <div class="col-md mx-2 card card-product " *ngFor="let fruit of fruitsVegetables$ | async">
                         <div class="card-body text-center">
                             <a class="text-dark">
                                 <img height="180px" src="{{fruit.imageUrl}}" alt="product-image" class="mb-2">
@@ -44,7 +43,7 @@
             <div class="container">
                 <h3 class="mb-5">Snack & Munchies </h3>
                 <div class="row ">
-                    <div class="col mx-2 card card-product " *ngFor="let snack of snackMunchies$ | async">
+                    <div class="col-md mx-2 card card-product " *ngFor="let snack of snackMunchies$ | async">
                         <div class="card-body text-center">
                             <a class="text-dark">
                                 <img height="180px" src="{{snack.imageUrl}}" alt="product-image" class="mb-2">
