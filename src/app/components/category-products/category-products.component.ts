@@ -43,7 +43,7 @@ export class CategoryProductsComponent implements AfterViewInit {
     { title: 'Avg. Rating', property:'desc-ratingValue' }
   ])
 
-  readonly selectedSortingValue: FormControl =  new FormControl({ title: 'Featured', property:'desc-featureValue' })
+  readonly selectedSortingValue: FormControl =  new FormControl('desc-featureValue')
   
   readonly limitButtons$: Observable<number[]> = of([5, 10, 15])
   
@@ -55,9 +55,12 @@ export class CategoryProductsComponent implements AfterViewInit {
         limit: queryParams['limit'] ? +queryParams['limit'] : 5,
         pagination: queryParams['pagination'] ? queryParams['pagination'] : 1, 
         stores: queryParams['stores'],
-        rate: queryParams['rate']
+        rate: queryParams['rate'],
+        priceFrom: queryParams['priceFrom'],
+        priceTo: queryParams['priceTo'],
       }
     }))
+
 
   readonly paginationButtons$: Observable<number[]> = combineLatest([
     this._productService.getAll(),
@@ -97,7 +100,7 @@ export class CategoryProductsComponent implements AfterViewInit {
     this._productService.getAll(),
     this.stores$,
     this.activatedRouteParams$,
-    this.selectedSortingValue.valueChanges.pipe(startWith('')),
+    this.selectedSortingValue.valueChanges.pipe(startWith('desc-featureValue')),
     this.queryParamsValue$,
     this.filterByPrice.valueChanges.pipe(startWith({priceFrom: 0, priceTo: 100000 })),
     this.ratingValueRadio$,
@@ -180,6 +183,7 @@ export class CategoryProductsComponent implements AfterViewInit {
   }
 
   constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService, private _router: Router) {
+    this.selectedSortingValue.valueChanges.subscribe(value=>console.log(value))
   }
 
   radioChange(rate: number[]) {
