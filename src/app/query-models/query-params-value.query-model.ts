@@ -3,4 +3,6 @@ export interface QueryParamsValueQueryModel {
   readonly pagination: number;
   readonly stores: string;
   readonly rate: number;
+  readonly priceFrom: number;
+  readonly priceTo: number;
 }
