@@ -36,8 +36,14 @@ export class CategoryProductsComponent implements AfterViewInit {
   readonly oneCategory$: Observable<CategoryModel> = this.activatedRouteParams$.pipe(
     switchMap(data => this._categoryService.getOne(data['categoryId'])))
 
-  readonly sortingValues$: Observable<string[]> = of(['Featured', 'Price Low to high', 'Price High to Low', 'Avg. Rating'])
-  readonly selectedSortingValue: FormControl =  new FormControl('Featured')
+  readonly sortingValues$: Observable<SortingValueQueryModel[]> = of([
+    { title: 'Featured', property:'desc-featureValue' },
+    { title: 'Price Low to high', property:'asc-price' },
+    { title: 'Price High to Low', property:'desc-price' },
+    { title: 'Avg. Rating', property:'desc-ratingValue' }
+  ])
+
+  readonly selectedSortingValue: FormControl =  new FormControl({ title: 'Featured', property:'desc-featureValue' })
   
   readonly limitButtons$: Observable<number[]> = of([5, 10, 15])
   
@@ -93,12 +99,14 @@ export class CategoryProductsComponent implements AfterViewInit {
     this.activatedRouteParams$,
     this.selectedSortingValue.valueChanges.pipe(startWith('')),
     this.queryParamsValue$,
-    this.filterByPrice.valueChanges.pipe(startWith({ priceFrom: 0, priceTo: 100000 })),
+    this.filterByPrice.valueChanges.pipe(startWith({priceFrom: 0, priceTo: 100000 })),
     this.ratingValueRadio$,
     this.filterValuesCheckbox$,
     this.searchStore.valueChanges.pipe(startWith(''))
   ]).pipe(
-    map(([products, stores, params, sortValues, qpvalues, filterPriceValue, ratingValueRadio, checkboxValue, searchStore]) => {
+    map(([products, stores, params, sortValues, queryParamsValues, filterPriceValue, ratingValueRadio, checkboxValue, searchStore]) => {
+      const order = sortValues.split('-')[0]
+      const property = sortValues.split('-')[1]
       const storeMap = stores.reduce((acc, curr) => {
         return {...acc, [curr.id]: curr.name}
       }, {} as Record<string, string>)
@@ -117,24 +125,18 @@ export class CategoryProductsComponent implements AfterViewInit {
             ratingValueArr: this._ratingMap(product.ratingValue)
           }
         })
-        .sort((a, b) => {
-          if (sortValues === 'Featured') {
-            return a.featureValue < b.featureValue ? 1 : -1
+        .sort((a: Record<string, any>, b: Record<string, any>) => {
+          if(order === 'desc'){
+            return a[property] <  b[property] ? 1 : -1
           }
-          if (sortValues === 'Price Low to high') {
-            return a.price > b.price ? 1 : -1
-          }
-          if (sortValues === 'Price High to Low') {
-            return a.price < b.price ? 1 : -1
-          }
-          return a.ratingValue < b.ratingValue ? 1 : -1
+          return a[property] > b[property] ? 1 : -1
         })
         .filter(product => product.price >= filterPriceValue.priceFrom && product.price <= filterPriceValue.priceTo)
         .filter(product => ratingValueRadio.length !== 0 ? Math.floor(product.ratingValue) === this._ratingArrMap(ratingValueRadio) : true)
         .filter(product => checkboxValue.stores.size === 0 || 
            product.storeIds.find((valIs: string) => checkboxValue.stores.has(valIs)))
         .filter(product => searchStore !== '' ? product.storeNames.some(store => store?.toLowerCase().includes(searchStore?.toLowerCase())) : true)
-        .slice(((qpvalues.pagination - 1) * qpvalues.limit), qpvalues.limit * qpvalues.pagination)
+        .slice(((queryParamsValues.pagination - 1) * queryParamsValues.limit), queryParamsValues.limit * queryParamsValues.pagination)
     })
   )
 
