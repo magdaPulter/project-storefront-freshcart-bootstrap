@@ -10,6 +10,7 @@ import { CategoryService } from '../../services/category.service';
 import { StoreService } from '../../services/store.service';
 import { ProductService } from '../../services/product.service';
 import { SortingValueQueryModel } from 'src/app/query-models/sorting-value.query-model';
+import { QueryParamsValueQueryModel } from 'src/app/query-models/query-params-value.query-model';
 
 @Component({
   selector: 'app-category-products',
@@ -36,26 +37,31 @@ export class CategoryProductsComponent implements AfterViewInit {
     switchMap(data => this._categoryService.getOne(data['categoryId'])))
 
   readonly sortingValues$: Observable<string[]> = of(['Featured', 'Price Low to high', 'Price High to Low', 'Avg. Rating'])
-    readonly selectedSortingValue: FormControl =  new FormControl('Featured')
+  readonly selectedSortingValue: FormControl =  new FormControl('Featured')
   
-
   readonly limitButtons$: Observable<number[]> = of([5, 10, 15])
+  
   readonly queryParams$: Observable<Params> = this._activatedRoute.queryParams;
-  readonly limit$: Observable<number> = this.queryParams$.pipe(
-    map((queryParams) => queryParams['limit'] ? +queryParams['limit'] : 5))
-  readonly pagination$: Observable<number> = this.queryParams$.pipe(
-    map((queryParams) => queryParams['pagination'] ? queryParams['pagination'] : 1)
-  )
+
+  readonly queryParamsValue$: Observable<QueryParamsValueQueryModel> = this.queryParams$.pipe(
+    map((queryParams) => {
+      return {
+        limit: queryParams['limit'] ? +queryParams['limit'] : 5,
+        pagination: queryParams['pagination'] ? queryParams['pagination'] : 1, 
+        stores: queryParams['stores'],
+        rate: queryParams['rate']
+      }
+    }))
 
   readonly paginationButtons$: Observable<number[]> = combineLatest([
     this._productService.getAll(),
-    this.queryParams$
+    this.queryParamsValue$
   ]).pipe(
     map(([products, queryParams]) => {
-      if (!queryParams['limit']) {
+      if (!queryParams.limit) {
         return [1]
       }
-      return Array.from(Array(Math.floor((products.length) / (queryParams['limit'])))
+      return Array.from(Array(Math.floor((products.length) / (queryParams.limit)))
         .keys()).map((n) => n + 1)
     })
   )
@@ -73,9 +79,9 @@ export class CategoryProductsComponent implements AfterViewInit {
   public ratingValueRadio$: Observable<number[]> = this._ratingValueRadioSubject.asObservable();
 
 
-  readonly filterValuesCheckbox$: Observable<{stores: Set<string>}> = this.queryParams$.pipe(
+  readonly filterValuesCheckbox$: Observable<{stores: Set<string>}> = this.queryParamsValue$.pipe(
     map((queryParams) => ({
-      stores: new Set<string>(queryParams['stores'] === undefined ? [] : queryParams['stores'].split(','))
+      stores: new Set<string>(queryParams.stores === undefined ? [] : queryParams.stores.split(','))
     }))
   )
 
@@ -86,14 +92,13 @@ export class CategoryProductsComponent implements AfterViewInit {
     this.stores$,
     this.activatedRouteParams$,
     this.selectedSortingValue.valueChanges.pipe(startWith('')),
-    this.limit$,
-    this.pagination$,
+    this.queryParamsValue$,
     this.filterByPrice.valueChanges.pipe(startWith({ priceFrom: 0, priceTo: 100000 })),
     this.ratingValueRadio$,
     this.filterValuesCheckbox$,
     this.searchStore.valueChanges.pipe(startWith(''))
   ]).pipe(
-    map(([products, stores, params, sortValues, limit, pagination, filterPriceValue, ratingValueRadio, checkboxValue, searchStore]) => {
+    map(([products, stores, params, sortValues, qpvalues, filterPriceValue, ratingValueRadio, checkboxValue, searchStore]) => {
       const storeMap = stores.reduce((acc, curr) => {
         return {...acc, [curr.id]: curr.name}
       }, {} as Record<string, string>)
@@ -129,16 +134,16 @@ export class CategoryProductsComponent implements AfterViewInit {
         .filter(product => checkboxValue.stores.size === 0 || 
            product.storeIds.find((valIs: string) => checkboxValue.stores.has(valIs)))
         .filter(product => searchStore !== '' ? product.storeNames.some(store => store?.toLowerCase().includes(searchStore?.toLowerCase())) : true)
-        .slice(((pagination - 1) * limit), limit * pagination)
+        .slice(((qpvalues.pagination - 1) * qpvalues.limit), qpvalues.limit * qpvalues.pagination)
     })
   )
 
   private _ratingMap(ratingValue: number): number[] {
-    const initialArr = [1, 1, 1, 1, 1]
+    const initialArr: number[] = [1, 1, 1, 1, 1]
     if (Number.isInteger(ratingValue)) {
       return initialArr.fill(0, ratingValue)
     }
-    const filledArray = initialArr.fill(0, ratingValue)
+    const filledArray: number[] = initialArr.fill(0, ratingValue)
     filledArray.splice(ratingValue, 1, 0.5)
     return filledArray
   }
@@ -177,6 +182,12 @@ export class CategoryProductsComponent implements AfterViewInit {
 
   radioChange(rate: number[]) {
     this._ratingValueRadioSubject.next(rate)
+
+    const rateValue = this._ratingArrMap(rate)
+    this._router.navigate(
+      [],
+      { queryParams: { rate: rateValue }, queryParamsHandling: 'merge' }
+    )
   }
 
   onLimitButtonClicked(limitButton: number) {
