@@ -92,7 +92,7 @@ export class CategoryProductsComponent implements AfterViewInit {
   )
 
   readonly searchStore: FormControl = new FormControl('')
-
+  
   readonly allProducts$: Observable<ProductsWithRatingQueryModel[]> = combineLatest([
     this._productService.getAll(),
     this.stores$,

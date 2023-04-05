@@ -16,15 +16,15 @@
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="bg-light  ps-md-10 ps-6 rounded">
-                            <div class="d-md-flex justify-content-between">
+                        <div class="bg-light ps-md-10 ps-6 rounded p-4">
+                            <div class="d-lg-flex">
                                 <div class="mt-5">
                                     <h1 class="mb-1 h4">{{store.name}}</h1>
                                     <div class="small text-muted mb-3">
                                         <span>Whatever the occasion, we have got you covered</span>
                                     </div>
                                     <form [formGroup]="form">
-                                        <div  class="d-flex input-group">
+                                        <div class="d-flex input-group">
                                             <input class="form-control rounded" type="search" formControlName="search" placeholder="{{store.name}}">
                                             <span class="input-group-append">
                                                 <button class="btn bg-white border border-start-0 ms-n10 rounded-0 rounded-end">
@@ -36,9 +36,7 @@
                                         </div>              
                                     </form>
                                 </div>
-                                <div>
-                                    <img src="assets/images/svg-graphics/store-graphics.svg">
-                                </div>
+                                <img class="img-fluid" src="assets/images/svg-graphics/store-graphics.svg">
                             </div>
                         </div>
                     </div>
