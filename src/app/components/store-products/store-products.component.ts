@@ -39,6 +39,7 @@ export class StoreProductsComponent {
       return products
         .filter(product => product.storeIds.find(store => store === params['storeId']))
         .filter(product => product.name.toLowerCase().includes(formValue.search.toLowerCase()))
+        .slice(0,5)
     })
   )
 
