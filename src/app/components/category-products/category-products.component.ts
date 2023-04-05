@@ -3,14 +3,15 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { BehaviorSubject, Observable, combineLatest, from, of } from 'rxjs';
 import { debounceTime, filter, map, shareReplay, startWith, switchMap, take, tap } from 'rxjs/operators';
+import { QueryParamsValueQueryModel } from '../../query-models/query-params-value.query-model';
 import { CategoryModel } from '../../models/category.model';
 import { StoreModel } from '../../models/store.model';
+import { SortingValueQueryModel } from '../../query-models/sorting-value.query-model';
 import { ProductsWithRatingQueryModel } from '../../query-models/products-with-rating.query-model';
+import { ProductModel } from '../../models/product.model';
 import { CategoryService } from '../../services/category.service';
 import { StoreService } from '../../services/store.service';
 import { ProductService } from '../../services/product.service';
-import { SortingValueQueryModel } from 'src/app/query-models/sorting-value.query-model';
-import { QueryParamsValueQueryModel } from 'src/app/query-models/query-params-value.query-model';
 
 @Component({
   selector: 'app-category-products',
@@ -33,24 +34,24 @@ export class CategoryProductsComponent implements AfterViewInit {
     map((queryParams) => {
       return {
         limit: queryParams['limit'] ? +queryParams['limit'] : 5,
-        pagination: queryParams['pagination'] ? +queryParams['pagination'] : 1, 
+        pagination: queryParams['pagination'] ? +queryParams['pagination'] : 1,
         stores: queryParams['stores'],
       }
-    }))
+    }),shareReplay(1))
 
-    readonly refreshFilterByPrice$: Observable<{priceFrom:string,priceTo:string}> = 
+  readonly refreshFilterByPrice$: Observable<{ priceFrom: string, priceTo: string }> =
     this.queryParams$.pipe(
-  
-     map((queryParams) => {
-       return {
-         priceFrom: queryParams['priceFrom'] ? queryParams['priceFrom'] : '0',
-         priceTo: queryParams['priceTo'] ? queryParams['priceTo'] : '10000',
-       }
-     }),
-     tap((price: {priceFrom:string,priceTo:string}) => this.filterByPrice.patchValue(price))
-    ,shareReplay(1)
+
+      map((queryParams) => {
+        return {
+          priceFrom: queryParams['priceFrom'] ,
+          priceTo: queryParams['priceTo'] 
+        }
+      }),
+      tap((price: { priceFrom: string, priceTo: string }) => this.filterByPrice.patchValue(price))
+      , shareReplay(1)
     )
-  
+
 
   readonly activatedRouteParams$: Observable<Params> = this._activatedRoute.params
   readonly categories$: Observable<CategoryModel[]> = this._categoryService.getAll();
@@ -67,28 +68,15 @@ export class CategoryProductsComponent implements AfterViewInit {
     switchMap(data => this._categoryService.getOne(data['categoryId'])))
 
   readonly sortingValues$: Observable<SortingValueQueryModel[]> = of([
-    { title: 'Featured', property:'desc-featureValue' },
-    { title: 'Price Low to high', property:'asc-price' },
-    { title: 'Price High to Low', property:'desc-price' },
-    { title: 'Avg. Rating', property:'desc-ratingValue' }
+    { title: 'Featured', property: 'desc-featureValue' },
+    { title: 'Price Low to high', property: 'asc-price' },
+    { title: 'Price High to Low', property: 'desc-price' },
+    { title: 'Avg. Rating', property: 'desc-ratingValue' }
   ])
 
-  readonly selectedSortingValue: FormControl =  new FormControl('desc-featureValue')
-  
-  readonly limitButtons$: Observable<number[]> = of([5, 10, 15])
+  readonly selectedSortingValue: FormControl = new FormControl('desc-featureValue')
 
-  readonly paginationButtons$: Observable<number[]> = combineLatest([
-    this._productService.getAll(),
-    this.queryParamsValue$
-  ]).pipe(
-    map(([products, queryParams]) => {
-      if (!queryParams.limit) {
-        return [1]
-      }
-      return Array.from(Array(Math.floor((products.length) / (queryParams.limit)))
-        .keys()).map((n) => n + 1)
-    })
-  )
+  readonly limitButtons$: Observable<number[]> = of([5, 10, 15])
 
   readonly ratingValue$: Observable<number[]> = of([5, 4, 3, 2])
   readonly ratingValueArray$: Observable<number[][]> = this.ratingValue$.pipe(
@@ -96,31 +84,29 @@ export class CategoryProductsComponent implements AfterViewInit {
 
   private _ratingValueRadioSubject: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   public ratingValueRadio$: Observable<number[]> = this._ratingValueRadioSubject.asObservable()
-  
-  readonly filterValuesCheckbox$: Observable<{stores: Set<string>}> = this.queryParamsValue$.pipe(
+
+  readonly filterValuesCheckbox$: Observable<{ stores: Set<string> }> = this.queryParamsValue$.pipe(
     map((queryParams) => ({
       stores: new Set<string>(queryParams.stores === undefined ? [] : queryParams.stores.split(','))
     }))
   )
 
   readonly searchStore: FormControl = new FormControl('')
- 
-  readonly products$: Observable<ProductsWithRatingQueryModel[]> = combineLatest([
+
+  readonly allProducts$: Observable<ProductsWithRatingQueryModel[]> = combineLatest([
     this._productService.getAll(),
     this.stores$,
     this.activatedRouteParams$,
     this.selectedSortingValue.valueChanges.pipe(startWith('desc-featureValue')),
-    this.queryParamsValue$,
-    this.refreshFilterByPrice$,
     this.ratingValueRadio$,
     this.filterValuesCheckbox$,
     this.searchStore.valueChanges.pipe(startWith(''))
   ]).pipe(
-    map(([products, stores, params, sortValues, queryParamsValues, filterPriceValue, ratingValueRadio, checkboxValue, searchStore]) => {
+    map(([products, stores, params, sortValues, ratingValueRadio, checkboxValue, searchStore]) => {
       const order = sortValues.split('-')[0]
       const property = sortValues.split('-')[1]
       const storeMap = stores.reduce((acc, curr) => {
-        return {...acc, [curr.id]: curr.name}
+        return { ...acc, [curr.id]: curr.name }
       }, {} as Record<string, string>)
       return products
         .filter(product => product.categoryId === params['categoryId'])
@@ -138,18 +124,52 @@ export class CategoryProductsComponent implements AfterViewInit {
           }
         })
         .sort((a: Record<string, any>, b: Record<string, any>) => {
-          if(order === 'desc'){
-            return a[property] <  b[property] ? 1 : -1
+          if (order === 'desc') {
+            return a[property] < b[property] ? 1 : -1
           }
           return a[property] > b[property] ? 1 : -1
         })
-        .filter(product => 
-          filterPriceValue ? product.price >= +filterPriceValue.priceFrom && product.price <= +filterPriceValue.priceTo : true)
         .filter(product => ratingValueRadio.length !== 0 ? Math.floor(product.ratingValue) === this._ratingArrMap(ratingValueRadio) : true)
-        .filter(product => checkboxValue.stores.size === 0 || 
-           product.storeIds.find((valIs: string) => checkboxValue.stores.has(valIs)))
+        .filter(product => checkboxValue.stores.size === 0 ||
+          product.storeIds.find((valIs: string) => checkboxValue.stores.has(valIs)))
         .filter(product => searchStore !== '' ? product.storeNames.some(store => store?.toLowerCase().includes(searchStore?.toLowerCase())) : true)
-        .slice(((queryParamsValues.pagination - 1) * queryParamsValues.limit), queryParamsValues.limit * queryParamsValues.pagination)
+    })
+  )
+
+  readonly filteredProducts$: Observable<ProductsWithRatingQueryModel[]> = combineLatest([
+    this.allProducts$,
+    this.refreshFilterByPrice$
+  ]).pipe(
+    map(([products, filterPriceValue]) => {
+      if(!filterPriceValue.priceFrom && !filterPriceValue.priceTo) {
+        return products
+      }
+      return products.filter(
+          product =>
+          filterPriceValue ? product.price >= +filterPriceValue.priceFrom && product.price <= +filterPriceValue.priceTo : true)
+    })
+  )
+
+
+  readonly paginationButtons$: Observable<number[]> = combineLatest([
+    this.filteredProducts$,
+    this.queryParamsValue$
+  ]).pipe(
+    map(([products, queryParams]) => {
+      return Array.from(Array(Math.ceil((products.length) / (queryParams.limit)))
+        .keys()).map((n) => n + 1)
+    })
+  )
+
+  readonly products$: Observable<ProductsWithRatingQueryModel[]> = combineLatest([
+    this.filteredProducts$,
+    this.queryParamsValue$,
+  ]).pipe(
+    map(([products, queryParamsValues]) => {
+      if(products.length <= queryParamsValues.limit && queryParamsValues.pagination > 1){
+        return products
+      }
+      return products.slice(((queryParamsValues.pagination - 1) * queryParamsValues.limit), queryParamsValues.limit * queryParamsValues.pagination)
     })
   )
 
@@ -166,24 +186,24 @@ export class CategoryProductsComponent implements AfterViewInit {
   private _ratingArrMap(array: number[]): number {
     return array.reduce((acc, curr) => acc + curr, 0)
   }
-  
+
 
   ngAfterViewInit(): void {
     this.filterByPrice.valueChanges.pipe(
       tap((filterByPrice) => {
-        if(filterByPrice) {
+        if (filterByPrice) {
           this._router.navigate(
             [],
-            { queryParams: 
-              { 
-                priceFrom: filterByPrice.priceFrom,
-                priceTo: filterByPrice.priceTo 
-              }, queryParamsHandling: 'merge' }
+            {
+              queryParams:
+                {
+                  priceFrom: filterByPrice.priceFrom,
+                  priceTo: filterByPrice.priceTo
+                }, queryParamsHandling: 'merge'
+            }
           )
         }
       }
-      
-  
       )
     ).subscribe()
 
@@ -192,20 +212,20 @@ export class CategoryProductsComponent implements AfterViewInit {
         .filter(([key, value]) => value)
         .map(([key, value]) => key)),
       tap((selectedValue) => {
-        if(selectedValue.length > 0) {
-          this._router.navigate([],
-            { 
-             queryParams: { stores: selectedValue.sort().join(',') }, queryParamsHandling: 'merge' }
-             ) 
-           
-        }
-      })  
-   ).subscribe()
+         if (selectedValue.length > 0) {
+          this._router.navigate(
+            [],
+            {
+              queryParams: { stores: selectedValue.sort().join(',') }, queryParamsHandling: 'merge'
+            }
+          )
+        } 
+      })
+    ).subscribe()
   }
 
 
   constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService, private _router: Router) {
-
   }
 
   radioChange(rate: number[]) {
