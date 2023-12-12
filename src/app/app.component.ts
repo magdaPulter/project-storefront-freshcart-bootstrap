@@ -14,7 +14,6 @@ export class AppComponent {
   title = 'ng-freshcard-bootstrap-theme';
   readonly categories$: Observable<CategoryModel[]> = this._categoryService.getAll();
   readonly stores$: Observable<StoreModel[]> = this._storeService.getAll();
-  readonly getToKnowUs$: Observable<string[]> = of(['Category', 'About', 'Blog','Help Center', 'Our Value'])
 
   constructor(private _categoryService: CategoryService, private _storeService: StoreService) {
   }
