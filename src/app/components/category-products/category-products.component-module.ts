@@ -11,10 +11,4 @@ import { CategoryProductsComponent } from './category-products.component';
   exports: [CategoryProductsComponent]
 })
 export class CategoryProductsComponentModule {
-
-
-
-  // onLinkClick(categoryId: string){
-
-  // }
 }
