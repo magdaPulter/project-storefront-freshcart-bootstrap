@@ -8,6 +8,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { FooterComponentModule } from "./components/footer/footer.component-module";
+import { NavbarComponentModule } from "./components/navbar/navbar.component-module";
 
 @NgModule({
     declarations: [AppComponent],
@@ -21,7 +22,8 @@ import { FooterComponentModule } from "./components/footer/footer.component-modu
         CollapseModule,
         CommonModule,
         RouterModule,
-        FooterComponentModule
+        FooterComponentModule,
+        NavbarComponentModule
     ]
 })
 export class AppModule {}
