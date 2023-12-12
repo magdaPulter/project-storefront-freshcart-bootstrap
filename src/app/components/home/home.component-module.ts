@@ -2,12 +2,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HomeComponent } from './home.component';
+import { CategoriesComponentModule } from "../categories/categories.component-module";
 
 @NgModule({
-  imports: [RouterModule, CommonModule],
-  declarations: [HomeComponent],
-  providers: [],
-  exports: [HomeComponent]
+    declarations: [HomeComponent],
+    providers: [],
+    exports: [HomeComponent],
+    imports: [RouterModule, CommonModule, CategoriesComponentModule]
 })
 export class HomeComponentModule {
 }
