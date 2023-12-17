@@ -12,6 +12,7 @@ import { ProductModel } from '../../models/product.model';
 import { CategoryService } from '../../services/category.service';
 import { StoreService } from '../../services/store.service';
 import { ProductService } from '../../services/product.service';
+import { ratingMap } from 'src/app/methods/ratingMap';
 
 @Component({
   selector: 'app-category-products',
@@ -52,7 +53,6 @@ export class CategoryProductsComponent implements AfterViewInit {
       , shareReplay(1)
     )
 
-
   readonly activatedRouteParams$: Observable<Params> = this._activatedRoute.params
   readonly categories$: Observable<CategoryModel[]> = this._categoryService.getAll();
 
@@ -78,10 +78,6 @@ export class CategoryProductsComponent implements AfterViewInit {
 
   readonly limitButtons$: Observable<number[]> = of([5, 10, 15])
 
-  readonly ratingValue$: Observable<number[]> = of([5, 4, 3, 2])
-  readonly ratingValueArray$: Observable<number[][]> = this.ratingValue$.pipe(
-    map((rating => rating.map(rate => this._ratingMap(rate)))))
-
   private _ratingValueRadioSubject: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   public ratingValueRadio$: Observable<number[]> = this._ratingValueRadioSubject.asObservable()
 
@@ -93,6 +89,11 @@ export class CategoryProductsComponent implements AfterViewInit {
 
   readonly searchStore: FormControl = new FormControl('')
   
+  ratingValueRadio(rate: number[]){
+    this._ratingValueRadioSubject.next(rate)
+  }
+
+
   readonly allProducts$: Observable<ProductsWithRatingQueryModel[]> = combineLatest([
     this._productService.getAll(),
     this.stores$,
@@ -120,7 +121,7 @@ export class CategoryProductsComponent implements AfterViewInit {
             featureValue: product.featureValue,
             ratingCount: product.ratingCount,
             ratingValue: product.ratingValue,
-            ratingValueArr: this._ratingMap(product.ratingValue)
+            ratingValueArr: ratingMap(product.ratingValue)
           }
         })
         .sort((a: Record<string, any>, b: Record<string, any>) => {
@@ -173,15 +174,6 @@ export class CategoryProductsComponent implements AfterViewInit {
     })
   )
 
-  private _ratingMap(ratingValue: number): number[] {
-    const initialArr: number[] = [1, 1, 1, 1, 1]
-    if (Number.isInteger(ratingValue)) {
-      return initialArr.fill(0, ratingValue)
-    }
-    const filledArray: number[] = initialArr.fill(0, ratingValue)
-    filledArray.splice(ratingValue, 1, 0.5)
-    return filledArray
-  }
 
   private _ratingArrMap(array: number[]): number {
     return array.reduce((acc, curr) => acc + curr, 0)
@@ -224,12 +216,7 @@ export class CategoryProductsComponent implements AfterViewInit {
     ).subscribe()
   }
 
-
   constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService, private _router: Router) {
-  }
-
-  radioChange(rate: number[]) {
-    this._ratingValueRadioSubject.next(rate)
   }
 
   onLimitButtonClicked(limitButton: number) {
