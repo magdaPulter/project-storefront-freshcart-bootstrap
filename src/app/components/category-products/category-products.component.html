@@ -61,7 +61,7 @@
                                     </div>
                                     <div>
                                         <select class="form-select" [formControl]="selectedSortingValue">
-                                            <option *ngFor="let item of sortingValues$ | async" [value]="item.property">
+                                            <option *ngFor="let item of sortingValues" [value]="item.property">
                                                 {{item.title}}
                                             </option>
                                         </select>

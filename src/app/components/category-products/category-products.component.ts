@@ -6,13 +6,13 @@ import { debounceTime, filter, map, shareReplay, startWith, switchMap, take, tap
 import { QueryParamsValueQueryModel } from '../../query-models/query-params-value.query-model';
 import { CategoryModel } from '../../models/category.model';
 import { StoreModel } from '../../models/store.model';
-import { SortingValueQueryModel } from '../../query-models/sorting-value.query-model';
 import { ProductsWithRatingQueryModel } from '../../query-models/products-with-rating.query-model';
-import { ProductModel } from '../../models/product.model';
 import { CategoryService } from '../../services/category.service';
 import { StoreService } from '../../services/store.service';
 import { ProductService } from '../../services/product.service';
+import { SortingValuesService } from '../../services/sorting-values.service';
 import { ratingMap } from 'src/app/methods/ratingMap';
+import { SortingValueQueryModel } from 'src/app/query-models/sorting-value.query-model';
 
 @Component({
   selector: 'app-category-products',
@@ -38,15 +38,14 @@ export class CategoryProductsComponent implements AfterViewInit {
         pagination: queryParams['pagination'] ? +queryParams['pagination'] : 1,
         stores: queryParams['stores'],
       }
-    }),shareReplay(1))
+    }), shareReplay(1))
 
   readonly refreshFilterByPrice$: Observable<{ priceFrom: string, priceTo: string }> =
     this.queryParams$.pipe(
-
       map((queryParams) => {
         return {
-          priceFrom: queryParams['priceFrom'] ,
-          priceTo: queryParams['priceTo'] 
+          priceFrom: queryParams['priceFrom'],
+          priceTo: queryParams['priceTo']
         }
       }),
       tap((price: { priceFrom: string, priceTo: string }) => this.filterByPrice.patchValue(price))
@@ -67,12 +66,7 @@ export class CategoryProductsComponent implements AfterViewInit {
   readonly oneCategory$: Observable<CategoryModel> = this.activatedRouteParams$.pipe(
     switchMap(data => this._categoryService.getOne(data['categoryId'])))
 
-  readonly sortingValues$: Observable<SortingValueQueryModel[]> = of([
-    { title: 'Featured', property: 'desc-featureValue' },
-    { title: 'Price Low to high', property: 'asc-price' },
-    { title: 'Price High to Low', property: 'desc-price' },
-    { title: 'Avg. Rating', property: 'desc-ratingValue' }
-  ])
+  readonly sortingValues: SortingValueQueryModel[] = this._sortingValuesService.getSortingValues()
 
   readonly selectedSortingValue: FormControl = new FormControl('desc-featureValue')
 
@@ -88,8 +82,8 @@ export class CategoryProductsComponent implements AfterViewInit {
   )
 
   readonly searchStore: FormControl = new FormControl('')
-  
-  ratingValueRadio(rate: number[]){
+
+  ratingValueRadio(rate: number[]) {
     this._ratingValueRadioSubject.next(rate)
   }
 
@@ -142,11 +136,11 @@ export class CategoryProductsComponent implements AfterViewInit {
     this.refreshFilterByPrice$
   ]).pipe(
     map(([products, filterPriceValue]) => {
-      if(!filterPriceValue.priceFrom && !filterPriceValue.priceTo) {
+      if (!filterPriceValue.priceFrom && !filterPriceValue.priceTo) {
         return products
       }
       return products.filter(
-          product =>
+        product =>
           filterPriceValue ? product.price >= +filterPriceValue.priceFrom && product.price <= +filterPriceValue.priceTo : true)
     })
   )
@@ -167,7 +161,7 @@ export class CategoryProductsComponent implements AfterViewInit {
     this.queryParamsValue$,
   ]).pipe(
     map(([products, queryParamsValues]) => {
-      if(products.length <= queryParamsValues.limit && queryParamsValues.pagination > 1){
+      if (products.length <= queryParamsValues.limit && queryParamsValues.pagination > 1) {
         return products
       }
       return products.slice(((queryParamsValues.pagination - 1) * queryParamsValues.limit), queryParamsValues.limit * queryParamsValues.pagination)
@@ -204,19 +198,19 @@ export class CategoryProductsComponent implements AfterViewInit {
         .filter(([key, value]) => value)
         .map(([key, value]) => key)),
       tap((selectedValue) => {
-         if (selectedValue.length > 0) {
+        if (selectedValue.length > 0) {
           this._router.navigate(
             [],
             {
               queryParams: { stores: selectedValue.sort().join(',') }, queryParamsHandling: 'merge'
             }
           )
-        } 
+        }
       })
     ).subscribe()
   }
 
-  constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService, private _router: Router) {
+  constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService, private _router: Router, private _sortingValuesService: SortingValuesService) {
   }
 
   onLimitButtonClicked(limitButton: number) {
