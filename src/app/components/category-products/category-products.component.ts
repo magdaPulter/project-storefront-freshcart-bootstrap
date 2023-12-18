@@ -38,7 +38,7 @@ export class CategoryProductsComponent implements AfterViewInit {
         pagination: queryParams['pagination'] ? +queryParams['pagination'] : 1,
         stores: queryParams['stores'],
       }
-    }), shareReplay(1))
+    }),shareReplay(1))
 
   readonly refreshFilterByPrice$: Observable<{ priceFrom: string, priceTo: string }> =
     this.queryParams$.pipe(
@@ -49,7 +49,7 @@ export class CategoryProductsComponent implements AfterViewInit {
         }
       }),
       tap((price: { priceFrom: string, priceTo: string }) => this.filterByPrice.patchValue(price))
-      , shareReplay(1)
+      ,shareReplay(1)
     )
 
   readonly activatedRouteParams$: Observable<Params> = this._activatedRoute.params
@@ -69,8 +69,6 @@ export class CategoryProductsComponent implements AfterViewInit {
   readonly sortingValues: SortingValueQueryModel[] = this._sortingValuesService.getSortingValues()
 
   readonly selectedSortingValue: FormControl = new FormControl('desc-featureValue')
-
-  readonly limitButtons$: Observable<number[]> = of([5, 10, 15])
 
   private _ratingValueRadioSubject: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   public ratingValueRadio$: Observable<number[]> = this._ratingValueRadioSubject.asObservable()
@@ -172,7 +170,8 @@ export class CategoryProductsComponent implements AfterViewInit {
   private _ratingArrMap(array: number[]): number {
     return array.reduce((acc, curr) => acc + curr, 0)
   }
-
+  constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService, private _router: Router, private _sortingValuesService: SortingValuesService) {
+  }
 
   ngAfterViewInit(): void {
     this.filterByPrice.valueChanges.pipe(
@@ -210,20 +209,4 @@ export class CategoryProductsComponent implements AfterViewInit {
     ).subscribe()
   }
 
-  constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService, private _router: Router, private _sortingValuesService: SortingValuesService) {
-  }
-
-  onLimitButtonClicked(limitButton: number) {
-    this._router.navigate(
-      [],
-      { queryParams: { limit: limitButton }, queryParamsHandling: 'merge' }
-    )
-  }
-
-  onPaginationButtonClicked(paginationButton: number) {
-    this._router.navigate(
-      [],
-      { queryParams: { pagination: paginationButton }, queryParamsHandling: 'merge' }
-    )
-  }
 }
