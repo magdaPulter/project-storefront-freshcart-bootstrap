@@ -191,22 +191,5 @@ export class CategoryProductsComponent implements AfterViewInit {
       }
       )
     ).subscribe()
-
-    this.storeForm.valueChanges.pipe(
-      map((filterValue) => Object.entries(filterValue)
-        .filter(([key, value]) => value)
-        .map(([key, value]) => key)),
-      tap((selectedValue) => {
-        if (selectedValue.length > 0) {
-          this._router.navigate(
-            [],
-            {
-              queryParams: { stores: selectedValue.sort().join(',') }, queryParamsHandling: 'merge'
-            }
-          )
-        }
-      })
-    ).subscribe()
   }
-
 }
