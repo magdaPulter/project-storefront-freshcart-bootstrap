@@ -26,15 +26,7 @@
                               
                                         <app-store-form [stores]="stores" [storeForm]="storeForm" [searchStore]="searchStore"></app-store-form>
                                      
-                                        <div class="mt-5">
-                                            <h5 class="mb-5">Price</h5>
-                                            <form [formGroup]="filterByPrice">
-                                                <input class="form-control mt-3" type="text" formControlName="priceFrom"
-                                                    placeholder="Price From">
-                                                <input class="form-control mt-3" type="text" formControlName="priceTo"
-                                                    placeholder="Price To">
-                                            </form>
-                                        </div>
+                                        <app-filter-by-price [filterByPrice]="filterByPrice"></app-filter-by-price>
 
                                         <app-rating (rateHandle)="ratingValueRadio($event)"></app-rating>
 

@@ -21,7 +21,7 @@ import { SortingValueQueryModel } from 'src/app/query-models/sorting-value.query
   encapsulation: ViewEncapsulation.Emulated,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CategoryProductsComponent implements AfterViewInit {
+export class CategoryProductsComponent {
   readonly storeForm: FormGroup = new FormGroup({})
 
   readonly queryParams$: Observable<Params> = this._activatedRoute.queryParams.pipe(shareReplay(1));
@@ -143,7 +143,6 @@ export class CategoryProductsComponent implements AfterViewInit {
     })
   )
 
-
   readonly paginationButtons$: Observable<number[]> = combineLatest([
     this.filteredProducts$,
     this.queryParamsValue$
@@ -166,30 +165,9 @@ export class CategoryProductsComponent implements AfterViewInit {
     })
   )
 
-
   private _ratingArrMap(array: number[]): number {
     return array.reduce((acc, curr) => acc + curr, 0)
   }
   constructor(private _categoryService: CategoryService, private _storeService: StoreService, private _activatedRoute: ActivatedRoute, private _productService: ProductService, private _router: Router, private _sortingValuesService: SortingValuesService) {
-  }
-
-  ngAfterViewInit(): void {
-    this.filterByPrice.valueChanges.pipe(
-      tap((filterByPrice) => {
-        if (filterByPrice) {
-          this._router.navigate(
-            [],
-            {
-              queryParams:
-                {
-                  priceFrom: filterByPrice.priceFrom,
-                  priceTo: filterByPrice.priceTo
-                }, queryParamsHandling: 'merge'
-            }
-          )
-        }
-      }
-      )
-    ).subscribe()
   }
 }
