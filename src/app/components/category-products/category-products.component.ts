@@ -63,7 +63,7 @@ export class CategoryProductsComponent {
     })
   )
 
-  readonly oneCategory$: Observable<CategoryModel> = this.activatedRouteParams$.pipe(
+  readonly selectedCategory$: Observable<CategoryModel> = this.activatedRouteParams$.pipe(
     switchMap(data => this._categoryService.getOne(data['categoryId'])))
 
   readonly sortingValues: SortingValueQueryModel[] = this._sortingValuesService.getSortingValues()

@@ -8,12 +8,13 @@ import { PaginationComponentModule } from "../pagination/pagination.component-mo
 import { StoreFormComponentModule } from "../store-form/store-form.component-module";
 import { FilterByPriceComponentModule } from "../filter-by-price/filter-by-price.component-module";
 import { SelectedSortingValueComponentModule } from "../selected-sorting-value/selected-sorting-value.component-module";
+import { CategoriesMenuComponentModule } from "../categories-menu/categories-menu.component-module";
 
 @NgModule({
     declarations: [CategoryProductsComponent],
     providers: [],
     exports: [CategoryProductsComponent],
-    imports: [CommonModule, RouterModule, ReactiveFormsModule, RatingComponentModule, PaginationComponentModule, StoreFormComponentModule, FilterByPriceComponentModule, SelectedSortingValueComponentModule]
+    imports: [CommonModule, RouterModule, ReactiveFormsModule, RatingComponentModule, PaginationComponentModule, StoreFormComponentModule, FilterByPriceComponentModule, SelectedSortingValueComponentModule, CategoriesMenuComponentModule]
 })
 export class CategoryProductsComponentModule {
 }

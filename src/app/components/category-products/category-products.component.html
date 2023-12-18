@@ -6,24 +6,10 @@
                     <ng-container *ngIf="paginationButtons$ | async as paginationButtons">
                         <section class="my-lg-14 my-8">
                             <div class="container">
-                                <div class="row g-2" *ngIf="oneCategory$ | async as oneCategory">
+                                <div class="row g-2" *ngIf="selectedCategory$ | async as selectedCategory">
                                     <div class="col-md-3 ">
-                                        <ul class="list-group list-group-flush">
-                                            <h5 class="mb-5">{{oneCategory.name}} </h5>
-                                            <li *ngFor="let category of categories" class="list-group-item ">
-                                                <a class="text-dark d-flex justify-content-between align-items-center"
-                                                    role="button" [routerLink]="'/categories/' + category.id">
-                                                    {{category.name}}
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                                        fill="currentColor" class="bi bi-chevron-right"
-                                                        viewBox="0 0 16 16">
-                                                        <path fill-rule="evenodd"
-                                                            d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
-                                                    </svg>
-                                                </a>
-                                            </li>
-                                        </ul>
-                              
+                                        <app-categories-menu [selectedCategory]="selectedCategory" [categories]="categories"></app-categories-menu>
+                                    
                                         <app-store-form [stores]="stores" [storeForm]="storeForm" [searchStore]="searchStore"></app-store-form>
                                      
                                         <app-filter-by-price [filterByPrice]="filterByPrice"></app-filter-by-price>
@@ -34,7 +20,7 @@
                                     <div class="col-md-9">
                                         <div class="align-self-start card mb-4 bg-light border-0">
                                             <div class="card-body p-9">
-                                                <h2 class="mb-0 fs-1">{{oneCategory.name}}</h2>
+                                                <h2 class="mb-0 fs-1">{{selectedCategory.name}}</h2>
                                             </div>
                                         </div>
                                    
@@ -47,7 +33,7 @@
                                                         <img [src]="product.imageUrl" [alt]="" class="mb-3">
                                                         <div
                                                             class="d-flex flex-column align-items-start justify-content-center">
-                                                            <p>{{oneCategory.name}}</p>
+                                                            <p>{{selectedCategory.name}}</p>
                                                             <h2 class="fs-6">{{product.name}}</h2>
                                                             <small class="text-warning">
                                                                 <i *ngFor="let val of product.ratingValueArr" class="bi"
