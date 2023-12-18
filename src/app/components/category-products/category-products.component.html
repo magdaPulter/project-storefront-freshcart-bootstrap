@@ -1,67 +1,62 @@
-<ng-container *ngIf="categories$ | async as categories">
-    <ng-container *ngIf="stores$ | async as stores">
-        <ng-container *ngIf="products$ | async as products">
-            <ng-container *ngIf="queryParamsValue$ | async as queryParams">
-                <ng-container *ngIf="filteredProducts$ | async as filteredProducts">
-                    <ng-container *ngIf="paginationButtons$ | async as paginationButtons">
-                        <section class="my-lg-14 my-8">
-                            <div class="container">
-                                <div class="row g-2" *ngIf="selectedCategory$ | async as selectedCategory">
-                                    <div class="col-md-3 ">
-                                        <app-categories-menu [selectedCategory]="selectedCategory" [categories]="categories"></app-categories-menu>
-                                    
-                                        <app-store-form [stores]="stores" [storeForm]="storeForm" [searchStore]="searchStore"></app-store-form>
-                                     
-                                        <app-filter-by-price [filterByPrice]="filterByPrice"></app-filter-by-price>
+<section class="my-lg-14 my-8">
+    <div class="container">
+        <div class="row g-2" *ngIf="selectedCategory$ | async as selectedCategory">
+            <div class="col-md-3 ">
+                <app-categories-menu *ngIf="categories$ | async as categories" [selectedCategory]="selectedCategory"
+                    [categories]="categories"></app-categories-menu>
 
-                                        <app-rating (rateHandle)="ratingValueRadio($event)"></app-rating>
+                <app-store-form *ngIf="stores$ | async as stores" [stores]="stores" [storeForm]="storeForm"
+                    [searchStore]="searchStore"></app-store-form>
 
-                                    </div>
-                                    <div class="col-md-9">
-                                        <div class="align-self-start card mb-4 bg-light border-0">
-                                            <div class="card-body p-9">
-                                                <h2 class="mb-0 fs-1">{{selectedCategory.name}}</h2>
-                                            </div>
+                <app-filter-by-price [filterByPrice]="filterByPrice"></app-filter-by-price>
+
+                <app-rating (rateHandle)="ratingValueRadio($event)"></app-rating>
+
+            </div>
+            <div class="col-md-9">
+                <div class="align-self-start card mb-4 bg-light border-0">
+                    <div class="card-body p-9">
+                        <h2 class="mb-0 fs-1">{{selectedCategory.name}}</h2>
+                    </div>
+                </div>
+
+                <app-selected-sorting-value *ngIf="filteredProducts$ | async as filteredProducts"
+                    [selectedSortingValue]="selectedSortingValue" [filteredProducts]="filteredProducts"
+                    [sortingValues]="sortingValues"></app-selected-sorting-value>
+
+                <ng-container *ngIf="products$ | async as products">
+                    <div *ngFor="let product of products" class="col"><a [routerLink]=""
+                            class="text-decoration-none text-inherit">
+                            <div class=" mt-3 card card-product">
+                                <div class="card-body text-center py-8 d-flex">
+                                    <img [src]="product.imageUrl" [alt]="" class="mb-3">
+                                    <div class="d-flex flex-column align-items-start justify-content-center">
+                                        <p>{{selectedCategory.name}}</p>
+                                        <h2 class="fs-6">{{product.name}}</h2>
+                                        <small class="text-warning">
+                                            <i *ngFor="let val of product.ratingValueArr" class="bi"
+                                                [ngClass]="{'bi-star-fill': val === 1, 'bi-star': val === 0, 'bi-star-half': val === 0.5}">
+                                            </i>
+                                            <span
+                                                class="text-secondary">{{product.ratingValue}}({{product.ratingCount}})</span>
+                                        </small>
+                                        <div>
+                                            <span class="text-dark">
+                                                {{ product.price | currency: 'USD' :'symbol':
+                                                '1.0-0' }}
+                                            </span>
                                         </div>
-                                   
-                                        <app-selected-sorting-value [selectedSortingValue]="selectedSortingValue" [filteredProducts]="filteredProducts" [sortingValues]="sortingValues"></app-selected-sorting-value>
-                                   
-                                        <div *ngFor="let product of products" class="col"><a [routerLink]=""
-                                                class="text-decoration-none text-inherit">
-                                                <div class=" mt-3 card card-product">
-                                                    <div class="card-body text-center py-8 d-flex">
-                                                        <img [src]="product.imageUrl" [alt]="" class="mb-3">
-                                                        <div
-                                                            class="d-flex flex-column align-items-start justify-content-center">
-                                                            <p>{{selectedCategory.name}}</p>
-                                                            <h2 class="fs-6">{{product.name}}</h2>
-                                                            <small class="text-warning">
-                                                                <i *ngFor="let val of product.ratingValueArr" class="bi"
-                                                                    [ngClass]="{'bi-star-fill': val === 1, 'bi-star': val === 0, 'bi-star-half': val === 0.5}">
-                                                                </i>
-                                                                <span
-                                                                    class="text-secondary">{{product.ratingValue}}({{product.ratingCount}})</span>
-                                                            </small>
-                                                            <div>
-                                                                <span class="text-dark">
-                                                                    {{ product.price | currency: 'USD' :'symbol':
-                                                                    '1.0-0' }}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <app-pagination [queryParams]="queryParams"
-                                            [paginationButtons]="paginationButtons"></app-pagination>
                                     </div>
                                 </div>
                             </div>
-                        </section>
-                    </ng-container>
+                        </a>
+                    </div>
                 </ng-container>
-            </ng-container>
-        </ng-container>
-    </ng-container>
-</ng-container>
+                <ng-container *ngIf="paginationButtons$ | async as paginationButtons">
+                    <app-pagination *ngIf="queryParamsValue$ | async as queryParams" [queryParams]="queryParams"
+                        [paginationButtons]="paginationButtons"></app-pagination>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</section>
