@@ -7,12 +7,15 @@ import { RatingComponentModule } from "../rating/rating.component-module";
 import { PaginationComponentModule } from "../pagination/pagination.component-module";
 import { StoreFormComponentModule } from "../store-form/store-form.component-module";
 import { FilterByPriceComponentModule } from "../filter-by-price/filter-by-price.component-module";
+import { SelectedSortingValueComponentModule } from "../selected-sorting-value/selected-sorting-value.component-module";
+import { CategoriesMenuComponentModule } from "../categories-menu/categories-menu.component-module";
+import { ProductsInCategoryComponentModule } from "../products-in-category/products-in-category.component-module";
 
 @NgModule({
     declarations: [CategoryProductsComponent],
     providers: [],
     exports: [CategoryProductsComponent],
-    imports: [CommonModule, RouterModule, ReactiveFormsModule, RatingComponentModule, PaginationComponentModule, StoreFormComponentModule, FilterByPriceComponentModule]
+    imports: [CommonModule, RouterModule, ReactiveFormsModule, RatingComponentModule, PaginationComponentModule, StoreFormComponentModule, FilterByPriceComponentModule, SelectedSortingValueComponentModule, CategoriesMenuComponentModule, ProductsInCategoryComponentModule]
 })
 export class CategoryProductsComponentModule {
 }
