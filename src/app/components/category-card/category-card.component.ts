@@ -2,11 +2,11 @@ import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@a
 import { ProductQueryModel } from 'src/app/query-models/product.query-model';
 
 @Component({
-  selector: 'app-snack-munchies',
-  templateUrl: './snack-munchies.component.html',
+  selector: 'app-category-card',
+  templateUrl: './category-card.component.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SnackMunchiesComponent {
-  @Input() snackMunchies!: ProductQueryModel[]
+export class CategoryCardComponent {
+  @Input() categories!: ProductQueryModel[]
 }
