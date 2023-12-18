@@ -1,0 +1,24 @@
+<div *ngFor="let product of products" class="col">
+    <a [routerLink]="" class="text-decoration-none text-inherit">
+        <div class=" mt-3 card card-product">
+            <div class="card-body text-center py-8 d-flex">
+                <img [src]="product.imageUrl" [alt]="" class="mb-3">
+                <div class="d-flex flex-column align-items-start justify-content-center">
+                    <p>{{selectedCategory.name}}</p>
+                    <h2 class="fs-6">{{product.name}}</h2>
+                    <small class="text-warning">
+                        <i *ngFor="let val of product.ratingValueArr" class="bi"
+                            [ngClass]="{'bi-star-fill': val === 1, 'bi-star': val === 0, 'bi-star-half': val === 0.5}">
+                        </i>
+                        <span class="text-secondary">{{product.ratingValue}}({{product.ratingCount}})</span>
+                    </small>
+                    <div>
+                        <span class="text-dark">
+                            {{ product.price | currency: 'USD' :'symbol':'1.0-0' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+</div>

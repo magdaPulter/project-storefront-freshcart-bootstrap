@@ -23,8 +23,9 @@
                 <app-selected-sorting-value *ngIf="filteredProducts$ | async as filteredProducts"
                     [selectedSortingValue]="selectedSortingValue" [filteredProducts]="filteredProducts"
                     [sortingValues]="sortingValues"></app-selected-sorting-value>
-
-                <ng-container *ngIf="products$ | async as products">
+                
+                <app-products-in-category *ngIf="products$ | async as products" [selectedCategory]="selectedCategory" [products]="products"></app-products-in-category>
+                <!-- <ng-container *ngIf="products$ | async as products">
                     <div *ngFor="let product of products" class="col"><a [routerLink]=""
                             class="text-decoration-none text-inherit">
                             <div class=" mt-3 card card-product">
@@ -51,7 +52,7 @@
                             </div>
                         </a>
                     </div>
-                </ng-container>
+                </ng-container> -->
                 <ng-container *ngIf="paginationButtons$ | async as paginationButtons">
                     <app-pagination *ngIf="queryParamsValue$ | async as queryParams" [queryParams]="queryParams"
                         [paginationButtons]="paginationButtons"></app-pagination>
