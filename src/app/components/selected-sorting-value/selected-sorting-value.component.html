@@ -1,0 +1,13 @@
+<div class="d-flex justify-content-between">
+    <div>
+        <span class="text-dark">{{filteredProducts.length}}</span> Products
+        found
+    </div>
+    <div>
+        <select class="form-select" [formControl]="selectedSortingValue">
+            <option *ngFor="let item of sortingValues" [value]="item.property">
+                {{item.title}}
+            </option>
+        </select>
+    </div>
+</div>
