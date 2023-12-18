@@ -1,0 +1,17 @@
+<div class="mt-5">
+    <h5 class="mb-5">Stores</h5>
+    <form class="mb-5">
+        <input class="form-control mt-3" type="text" [formControl]="searchStore"
+            placeholder="Search by store">
+    </form>
+    
+    <form [formGroup]="storeForm">
+        <div *ngFor="let item of stores" class="form-check mb-2">
+            <input [id]="item" [value]="item.id" class="form-check-input"
+                type="checkbox" [formControlName]="item.id">
+            <label [for]="item" class="form-check-label">
+                {{item.name}}
+            </label>
+        </div>
+    </form>
+</div>
