@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
@@ -30,16 +30,16 @@ export class CategoryProductsComponent {
 
   readonly sortingValues: SortingValueQueryModel[] = this._sortingValuesService.getSortingValues()
 
-  readonly selectedSortingValue: FormControl = new FormControl('desc-featureValue')
+  readonly selectedSortingValue: UntypedFormControl = new UntypedFormControl('desc-featureValue')
 
-  readonly storeForm: FormGroup = new FormGroup({})
+  readonly storeForm: UntypedFormGroup = new UntypedFormGroup({})
 
-  readonly filterByPrice: FormGroup = new FormGroup({
-    priceFrom: new FormControl(''),
-    priceTo: new FormControl('')
+  readonly filterByPrice: UntypedFormGroup = new UntypedFormGroup({
+    priceFrom: new UntypedFormControl(''),
+    priceTo: new UntypedFormControl('')
   });
 
-  readonly searchStore: FormControl = new FormControl('')
+  readonly searchStore: UntypedFormControl = new UntypedFormControl('')
 
   readonly selectedCategory$: Observable<CategoryModel> = this.activatedRouteParams$.pipe(
     switchMap(data => this._categoryService.getOne(data['categoryId'])))
@@ -68,7 +68,7 @@ export class CategoryProductsComponent {
   readonly stores$: Observable<StoreModel[]> = this._storeService.getAll().pipe(
     tap((stores) => {
       stores.forEach((store) => {
-        this.storeForm.addControl(store.id, new FormControl(false))
+        this.storeForm.addControl(store.id, new UntypedFormControl(false))
       })
     })
   )

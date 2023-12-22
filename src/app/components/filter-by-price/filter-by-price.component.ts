@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs';
 
@@ -10,7 +10,7 @@ import { tap } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FilterByPriceComponent implements AfterViewInit{
-@Input() filterByPrice!: FormGroup
+@Input() filterByPrice!: UntypedFormGroup
 
 constructor(private _router: Router){}
 

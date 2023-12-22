@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { map, tap } from 'rxjs';
 import { StoreModel } from 'src/app/models/store.model';
@@ -11,8 +11,8 @@ import { StoreModel } from 'src/app/models/store.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StoreFormComponent implements AfterViewInit{
-  @Input() storeForm!: FormGroup
-  @Input() searchStore!: FormControl
+  @Input() storeForm!: UntypedFormGroup
+  @Input() searchStore!: UntypedFormControl
   @Input() stores!: StoreModel[]
 
   constructor(private _router: Router){}
