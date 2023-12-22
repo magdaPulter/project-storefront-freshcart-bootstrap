@@ -1,8 +1,8 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { BehaviorSubject, Observable, combineLatest, from, of } from 'rxjs';
-import { debounceTime, filter, map, shareReplay, startWith, switchMap, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { QueryParamsValueQueryModel } from '../../query-models/query-params-value.query-model';
 import { CategoryModel } from '../../models/category.model';
 import { StoreModel } from '../../models/store.model';
@@ -22,14 +22,27 @@ import { SortingValueQueryModel } from 'src/app/query-models/sorting-value.query
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CategoryProductsComponent {
-  readonly storeForm: FormGroup = new FormGroup({})
+  readonly activatedRouteParams$: Observable<Params> = this._activatedRoute.params
+  
+  readonly categories$: Observable<CategoryModel[]> = this._categoryService.getAll();
 
   readonly queryParams$: Observable<Params> = this._activatedRoute.queryParams.pipe(shareReplay(1));
+
+  readonly sortingValues: SortingValueQueryModel[] = this._sortingValuesService.getSortingValues()
+
+  readonly selectedSortingValue: FormControl = new FormControl('desc-featureValue')
+
+  readonly storeForm: FormGroup = new FormGroup({})
 
   readonly filterByPrice: FormGroup = new FormGroup({
     priceFrom: new FormControl(''),
     priceTo: new FormControl('')
   });
+
+  readonly searchStore: FormControl = new FormControl('')
+
+  readonly selectedCategory$: Observable<CategoryModel> = this.activatedRouteParams$.pipe(
+    switchMap(data => this._categoryService.getOne(data['categoryId'])))
 
   readonly queryParamsValue$: Observable<QueryParamsValueQueryModel> = this.queryParams$.pipe(
     map((queryParams) => {
@@ -52,9 +65,6 @@ export class CategoryProductsComponent {
       ,shareReplay(1)
     )
 
-  readonly activatedRouteParams$: Observable<Params> = this._activatedRoute.params
-  readonly categories$: Observable<CategoryModel[]> = this._categoryService.getAll();
-
   readonly stores$: Observable<StoreModel[]> = this._storeService.getAll().pipe(
     tap((stores) => {
       stores.forEach((store) => {
@@ -62,13 +72,6 @@ export class CategoryProductsComponent {
       })
     })
   )
-
-  readonly selectedCategory$: Observable<CategoryModel> = this.activatedRouteParams$.pipe(
-    switchMap(data => this._categoryService.getOne(data['categoryId'])))
-
-  readonly sortingValues: SortingValueQueryModel[] = this._sortingValuesService.getSortingValues()
-
-  readonly selectedSortingValue: FormControl = new FormControl('desc-featureValue')
 
   private _ratingValueRadioSubject: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   public ratingValueRadio$: Observable<number[]> = this._ratingValueRadioSubject.asObservable()
@@ -78,8 +81,6 @@ export class CategoryProductsComponent {
       stores: new Set<string>(queryParams.stores === undefined ? [] : queryParams.stores.split(','))
     }))
   )
-
-  readonly searchStore: FormControl = new FormControl('')
 
   ratingValueRadio(rate: number[]) {
     this._ratingValueRadioSubject.next(rate)
