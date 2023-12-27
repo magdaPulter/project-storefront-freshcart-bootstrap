@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Output, ViewEncapsulation, EventEmitter } from '@angular/core';
-import { BehaviorSubject, map, Observable, of } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { ratingMap } from '../../methods/ratingMap'
 
 @Component({

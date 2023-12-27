@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { combineLatest, map, Observable } from 'rxjs';
 import { CategoryModel } from '../../models/category.model';
-import { StoreModel } from '../../models/store.model';
-import { ProductModel } from '../../models/product.model';
 import { CategoryService } from '../../services/category.service';
 import { StoreService } from '../../services/store.service';
 import { ProductService } from '../../services/product.service';
