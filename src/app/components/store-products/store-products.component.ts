@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Observable, combineLatest } from 'rxjs';
-import { filter, map, startWith, switchMap } from 'rxjs/operators';
+import { map, startWith, switchMap } from 'rxjs/operators';
 import { CategoryModel } from '../../models/category.model';
 import { StoreModel } from '../../models/store.model';
 import { ProductModel } from '../../models/product.model';
@@ -26,8 +26,8 @@ export class StoreProductsComponent {
   readonly oneStore$: Observable<StoreModel> = this.activatedRouteParam$.pipe(
     switchMap(data => this._storeService.getOne(data['storeId'])))
 
-  readonly form: UntypedFormGroup = new UntypedFormGroup({
-    search: new UntypedFormControl('')
+  readonly form: FormGroup = new FormGroup({
+    search: new FormControl('')
   });
 
   readonly productsInStore$: Observable<ProductModel[]> = combineLatest([
