@@ -1,7 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
-import { combineLatest, map, Observable, of } from 'rxjs';
-import { ProductsWithRatingQueryModel } from 'src/app/query-models/products-with-rating.query-model';
 import { QueryParamsValueQueryModel } from 'src/app/query-models/query-params-value.query-model';
 
 @Component({
