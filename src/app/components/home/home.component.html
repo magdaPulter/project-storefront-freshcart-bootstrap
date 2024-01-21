@@ -1,10 +1,9 @@
-<app-categories *ngIf="categories$ | async as categories" 
-    [categories]="categories"></app-categories>
+<app-categories *ngIf="categories$ | async as categories" [categories]="categories"></app-categories>
 
-<app-category-card *ngIf="fruitsVegetables$ | async as fruitsVegetables"
-    [categories]="fruitsVegetables">Fruits & Vegetables</app-category-card>
+<app-category-card *ngIf="fruitsVegetables$ | async as fruitsVegetables" [categories]="fruitsVegetables">Fruits &
+    Vegetables</app-category-card>
 
-<app-category-card *ngIf="snackMunchies$ | async as snackMunchies" 
-    [categories]="snackMunchies">Snack & Munchies</app-category-card>
+<app-category-card *ngIf="snackMunchies$ | async as snackMunchies" [categories]="snackMunchies">Snack &
+    Munchies</app-category-card>
 
 <app-stores *ngIf="stores$ | async as stores" [stores]="stores"></app-stores>

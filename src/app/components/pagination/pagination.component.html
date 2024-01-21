@@ -1,9 +1,9 @@
 <div class="d-flex mt-5">
     <nav class="col-6">
         <h2 class="fs-6">Limit</h2>
-        <ul class="pagination"  >
+        <ul class="pagination">
             <li class="page-item" *ngFor="let limitButton of limitButtons"
-            [ngClass]="{ active: limitButton === queryParams.limit }">
+                [ngClass]="{ active: limitButton === queryParams.limit }">
                 <a class="page-link" (click)="onLimitButtonClicked(limitButton)">
                     {{limitButton}}
                 </a>
