@@ -17,6 +17,7 @@ import { ProductService } from '../../services/product.service';
 import { SortingValuesService } from '../../services/sorting-values.service';
 import { ratingMap } from 'src/app/methods/ratingMap';
 import { SortingValueQueryModel } from 'src/app/query-models/sorting-value.query-model';
+import { PaginationService } from 'src/app/services/pagination.service';
 
 @Component({
   selector: 'app-category-products',
@@ -28,8 +29,8 @@ import { SortingValueQueryModel } from 'src/app/query-models/sorting-value.query
 export class CategoryProductsComponent {
   readonly storeForm: FormGroup = new FormGroup({});
 
-  readonly queryParams$: Observable<Params> =
-    this._activatedRoute.queryParams.pipe(shareReplay(1));
+  // readonly queryParams$: Observable<Params> =
+  //   this._activatedRoute.queryParams.pipe(shareReplay(1));
 
   readonly filterByPrice: FormGroup = new FormGroup({
     priceFrom: new FormControl(''),
@@ -37,23 +38,25 @@ export class CategoryProductsComponent {
   });
 
   readonly queryParamsValue$: Observable<QueryParamsValueQueryModel> =
-    this.queryParams$.pipe(
-      map((queryParams) => {
-        return {
-          limit: queryParams['limit'] ? +queryParams['limit'] : 5,
-          pagination: queryParams['pagination']
-            ? +queryParams['pagination']
-            : 1,
-          stores: queryParams['stores'],
-        };
-      }),
-      shareReplay(1)
-    );
+    this._paginationService.getQueryParamsValues();
+  // readonly queryParamsValue$: Observable<QueryParamsValueQueryModel> =
+  //   this.queryParams$.pipe(
+  //     map((queryParams) => {
+  //       return {
+  //         limit: queryParams['limit'] ? +queryParams['limit'] : 5,
+  //         pagination: queryParams['pagination']
+  //           ? +queryParams['pagination']
+  //           : 1,
+  //         stores: queryParams['stores'],
+  //       };
+  //     }),
+  //     shareReplay(1)
+  //   );
 
   readonly refreshFilterByPrice$: Observable<{
     priceFrom: string;
     priceTo: string;
-  }> = this.queryParams$.pipe(
+  }> = this._paginationService.getQueryParams().pipe(
     map((queryParams) => {
       return {
         priceFrom: queryParams['priceFrom'],
@@ -236,6 +239,7 @@ export class CategoryProductsComponent {
     private _activatedRoute: ActivatedRoute,
     private _productService: ProductService,
     private _router: Router,
-    private _sortingValuesService: SortingValuesService
+    private _sortingValuesService: SortingValuesService,
+    private _paginationService: PaginationService
   ) {}
 }
