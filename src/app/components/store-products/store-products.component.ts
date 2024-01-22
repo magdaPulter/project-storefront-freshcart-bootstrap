@@ -1,4 +1,8 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewEncapsulation,
+} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Observable, combineLatest } from 'rxjs';
@@ -15,35 +19,45 @@ import { ProductService } from '../../services/product.service';
   styleUrls: ['./store-products.component.scss'],
   templateUrl: './store-products.component.html',
   encapsulation: ViewEncapsulation.Emulated,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StoreProductsComponent {
-  readonly activatedRouteParam$: Observable<Params> = this._activatedRoute.params
+  readonly activatedRouteParam$: Observable<Params> =
+    this._activatedRoute.params;
 
-  readonly categories$: Observable<CategoryModel[]> = this._categoryService.getAll()
+  readonly categories$: Observable<CategoryModel[]> =
+    this._categoryService.getAll();
   readonly stores$: Observable<StoreModel[]> = this._storeService.getAll();
 
   readonly oneStore$: Observable<StoreModel> = this.activatedRouteParam$.pipe(
-    switchMap(data => this._storeService.getOne(data['storeId'])))
+    switchMap((data) => this._storeService.getOne(data['storeId']))
+  );
 
   readonly form: FormGroup = new FormGroup({
-    search: new FormControl('')
+    search: new FormControl(''),
   });
 
   readonly productsInStore$: Observable<ProductModel[]> = combineLatest([
     this._productService.getAll(),
     this.activatedRouteParam$,
-    this.form.valueChanges.pipe(startWith({ search: '' }))
+    this.form.valueChanges.pipe(startWith({ search: '' })),
   ]).pipe(
     map(([products, params, formValue]) => {
       return products
-        .filter(product => product.storeIds.find(store => store === params['storeId']))
-        .filter(product => product.name.toLowerCase().includes(formValue.search.toLowerCase()))
-        .slice(0,5)
+        .filter((product) =>
+          product.storeIds.find((store) => store === params['storeId'])
+        )
+        .filter((product) =>
+          product.name.toLowerCase().includes(formValue.search.toLowerCase())
+        )
+        .slice(0, 5);
     })
-  )
+  );
 
-  constructor(private _categoryService: CategoryService, private _activatedRoute: ActivatedRoute, private _storeService: StoreService, private _productService: ProductService) {
-
-  }
+  constructor(
+    private _categoryService: CategoryService,
+    private _activatedRoute: ActivatedRoute,
+    private _storeService: StoreService,
+    private _productService: ProductService
+  ) {}
 }

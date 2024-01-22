@@ -10,8 +10,9 @@
                         </div>
                         <div class="mt-4">
                             <h1 class="mb-1 h4">{{store.name}}</h1>
-                            <div class="small text-muted"> 
-                                <span>It's only {{store.distanceInMeters/1000 | number: '1.0-1'}} km away from You! </span> 
+                            <div class="small text-muted">
+                                <span>It's only {{store.distanceInMeters/1000 | number: '1.0-1'}} km away from You!
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -25,15 +26,20 @@
                                     </div>
                                     <form [formGroup]="form">
                                         <div class="d-flex input-group">
-                                            <input class="form-control rounded" type="search" formControlName="search" placeholder="{{store.name}}">
+                                            <input class="form-control rounded" type="search" formControlName="search"
+                                                placeholder="{{store.name}}">
                                             <span class="input-group-append">
-                                                <button class="btn bg-white border border-start-0 ms-n10 rounded-0 rounded-end">
-                                                    <svg class="" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                                <button
+                                                    class="btn bg-white border border-start-0 ms-n10 rounded-0 rounded-end">
+                                                    <svg class="" xmlns="http://www.w3.org/2000/svg" width="16"
+                                                        height="16" fill="currentColor" class="bi bi-search"
+                                                        viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
                                                     </svg>
                                                 </button>
                                             </span>
-                                        </div>              
+                                        </div>
                                     </form>
                                 </div>
                                 <img class="img-fluid" src="assets/images/svg-graphics/store-graphics.svg">
@@ -60,6 +66,3 @@
         </section>
     </ng-container>
 </ng-container>
-
-
-
