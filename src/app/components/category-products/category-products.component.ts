@@ -29,9 +29,6 @@ import { PaginationService } from 'src/app/services/pagination.service';
 export class CategoryProductsComponent {
   readonly storeForm: FormGroup = new FormGroup({});
 
-  // readonly queryParams$: Observable<Params> =
-  //   this._activatedRoute.queryParams.pipe(shareReplay(1));
-
   readonly filterByPrice: FormGroup = new FormGroup({
     priceFrom: new FormControl(''),
     priceTo: new FormControl(''),
@@ -39,19 +36,6 @@ export class CategoryProductsComponent {
 
   readonly queryParamsValue$: Observable<QueryParamsValueQueryModel> =
     this._paginationService.getQueryParamsValues();
-  // readonly queryParamsValue$: Observable<QueryParamsValueQueryModel> =
-  //   this.queryParams$.pipe(
-  //     map((queryParams) => {
-  //       return {
-  //         limit: queryParams['limit'] ? +queryParams['limit'] : 5,
-  //         pagination: queryParams['pagination']
-  //           ? +queryParams['pagination']
-  //           : 1,
-  //         stores: queryParams['stores'],
-  //       };
-  //     }),
-  //     shareReplay(1)
-  //   );
 
   readonly refreshFilterByPrice$: Observable<{
     priceFrom: string;
@@ -202,17 +186,6 @@ export class CategoryProductsComponent {
         );
       })
     );
-
-  readonly paginationButtons$: Observable<number[]> = combineLatest([
-    this.filteredProducts$,
-    this.queryParamsValue$,
-  ]).pipe(
-    map(([products, queryParams]) => {
-      return Array.from(
-        Array(Math.ceil(products.length / queryParams.limit)).keys()
-      ).map((n) => n + 1);
-    })
-  );
 
   readonly products$: Observable<ProductsWithRatingQueryModel[]> =
     combineLatest([this.filteredProducts$, this.queryParamsValue$]).pipe(

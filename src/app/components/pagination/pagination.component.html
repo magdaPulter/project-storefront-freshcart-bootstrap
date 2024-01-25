@@ -1,4 +1,4 @@
-<div class="d-flex mt-5">
+<div class="d-flex mt-5" *ngIf="queryParamsValue$ | async as queryParams">
     <nav class="col-6">
         <h2 class="fs-6">Limit</h2>
         <ul class="pagination">
@@ -12,7 +12,7 @@
     </nav>
     <nav class="col-6">
         <h2 class="fs-6">Pagination</h2>
-        <ul class="pagination">
+        <ul class="pagination" *ngIf="paginationButtons$ | async as paginationButtons">
             <li class="page-item" *ngFor="let paginationButton of paginationButtons"
                 [ngClass]="{ active: paginationButton === queryParams.pagination }">
                 <a class="page-link" (click)="onPaginationButtonClicked(paginationButton)">
