@@ -27,10 +27,9 @@
                 <app-products-in-category *ngIf="products$ | async as products" [selectedCategory]="selectedCategory"
                     [products]="products"></app-products-in-category>
 
-                <ng-container *ngIf="paginationButtons$ | async as paginationButtons">
-                    <app-pagination *ngIf="queryParamsValue$ | async as queryParams" [queryParams]="queryParams"
-                        [paginationButtons]="paginationButtons"></app-pagination>
-                </ng-container>
+                <app-pagination *ngIf="filteredProducts$ | async as filteredProducts"
+                    [totalCount]="filteredProducts.length"></app-pagination>
+
             </div>
         </div>
     </div>
