@@ -17,7 +17,7 @@ import { ProductService } from '../../services/product.service';
 import { SortingValuesService } from '../../services/sorting-values.service';
 import { ratingMap } from 'src/app/methods/ratingMap';
 import { SortingValueQueryModel } from 'src/app/query-models/sorting-value.query-model';
-import { PaginationService } from 'src/app/services/pagination.service';
+import { QueryParamsService } from 'src/app/services/queryParams.service';
 
 @Component({
   selector: 'app-category-products',
@@ -35,12 +35,12 @@ export class CategoryProductsComponent {
   });
 
   readonly queryParamsValue$: Observable<QueryParamsValueQueryModel> =
-    this._paginationService.getQueryParamsValues();
+    this._queryParamsService.getQueryParamsValues();
 
   readonly refreshFilterByPrice$: Observable<{
     priceFrom: string;
     priceTo: string;
-  }> = this._paginationService.getQueryParams().pipe(
+  }> = this._queryParamsService.getQueryParams().pipe(
     map((queryParams) => {
       return {
         priceFrom: queryParams['priceFrom'],
@@ -213,6 +213,6 @@ export class CategoryProductsComponent {
     private _productService: ProductService,
     private _router: Router,
     private _sortingValuesService: SortingValuesService,
-    private _paginationService: PaginationService
+    private _queryParamsService: QueryParamsService
   ) {}
 }
