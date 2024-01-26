@@ -6,8 +6,9 @@
                     <div class="col-12">
                         <h6 class="mb-4">Categories</h6>
                         <ul class="navbar-nav ">
-                            <li *ngFor="let category of categories" class="nav-item"><a class="nav-link"
-                                    [routerLink]="'/categories/' + category.id" role="button">{{category.name}}</a>
+                            <li *ngFor="let category of categories" class="nav-item">
+                                <a [routerLink]="'/categories/' + category.id" class="nav-link"
+                                    role="button">{{category.name}}</a>
                             </li>
                         </ul>
                     </div>
@@ -18,8 +19,8 @@
                     <div class="col-12">
                         <h6 class="mb-4">Stores</h6>
                         <ul class="navbar-nav">
-                            <li *ngFor="let store of stores" class="nav-item "><a class="nav-link"
-                                    [routerLink]="'/stores/' + store.id" role="button">{{store.name}}</a>
+                            <li *ngFor="let store of stores" [routerLink]="'/stores/' + store.id" class="nav-item">
+                                <a class="nav-link" role="button">{{store.name}}</a>
                             </li>
                         </ul>
                     </div>

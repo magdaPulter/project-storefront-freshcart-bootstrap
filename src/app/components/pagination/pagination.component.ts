@@ -1,5 +1,4 @@
 import {
-  AfterContentInit,
   ChangeDetectionStrategy,
   Component,
   Input,
@@ -12,7 +11,7 @@ import { BehaviorSubject, Observable, combineLatest, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { QueryParamsValueQueryModel } from '../../query-models/query-params-value.query-model';
-import { PaginationService } from '../../services/pagination.service';
+import { QueryParamsService } from 'src/app/services/queryParams.service';
 
 @Component({
   selector: 'app-pagination',
@@ -30,13 +29,13 @@ export class PaginationComponent implements OnChanges {
 
   constructor(
     private _router: Router,
-    private _paginationService: PaginationService
+    private _queryParamsService: QueryParamsService
   ) {}
 
   readonly limitButtons: number[] = [5, 10, 15];
 
   readonly queryParamsValue$: Observable<QueryParamsValueQueryModel> =
-    this._paginationService.getQueryParamsValues();
+    this._queryParamsService.getQueryParamsValues();
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['totalCount']) {

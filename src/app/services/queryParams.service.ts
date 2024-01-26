@@ -4,7 +4,7 @@ import { Observable, map, shareReplay } from 'rxjs';
 import { QueryParamsValueQueryModel } from '../query-models/query-params-value.query-model';
 
 @Injectable({ providedIn: 'root' })
-export class PaginationService {
+export class QueryParamsService {
   getQueryParams(): Observable<Params> {
     return this._activatedRoute.queryParams.pipe(shareReplay(1));
   }
