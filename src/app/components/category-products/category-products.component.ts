@@ -6,18 +6,26 @@ import {
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
-import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
+import {
+  filter,
+  map,
+  shareReplay,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 import { QueryParamsValueQueryModel } from '../../query-models/query-params-value.query-model';
 import { CategoryModel } from '../../models/category.model';
 import { StoreModel } from '../../models/store.model';
+import { SortingValueQueryModel } from '../../query-models/sorting-value.query-model';
 import { ProductsWithRatingQueryModel } from '../../query-models/products-with-rating.query-model';
 import { CategoryService } from '../../services/category.service';
 import { StoreService } from '../../services/store.service';
 import { ProductService } from '../../services/product.service';
 import { SortingValuesService } from '../../services/sorting-values.service';
+import { QueryParamsService } from '../../services/queryParams.service';
+import { FilterValuesService } from '../../services/filterValues.service';
 import { ratingMap } from 'src/app/methods/ratingMap';
-import { SortingValueQueryModel } from 'src/app/query-models/sorting-value.query-model';
-import { QueryParamsService } from 'src/app/services/queryParams.service';
 
 @Component({
   selector: 'app-category-products',
@@ -40,13 +48,7 @@ export class CategoryProductsComponent {
   readonly refreshFilterByPrice$: Observable<{
     priceFrom: string;
     priceTo: string;
-  }> = this._queryParamsService.getQueryParams().pipe(
-    map((queryParams) => {
-      return {
-        priceFrom: queryParams['priceFrom'],
-        priceTo: queryParams['priceTo'],
-      };
-    }),
+  }> = this._filterValuesService.refreshFilterByPrice().pipe(
     tap((price: { priceFrom: string; priceTo: string }) =>
       this.filterByPrice.patchValue(price)
     ),
@@ -84,13 +86,7 @@ export class CategoryProductsComponent {
     this._ratingValueRadioSubject.asObservable();
 
   readonly filterValuesCheckbox$: Observable<{ stores: Set<string> }> =
-    this.queryParamsValue$.pipe(
-      map((queryParams) => ({
-        stores: new Set<string>(
-          queryParams.stores === undefined ? [] : queryParams.stores.split(',')
-        ),
-      }))
-    );
+    this._filterValuesService.filterValuesCheckbox();
 
   readonly searchStore: FormControl = new FormControl('');
 
@@ -211,8 +207,8 @@ export class CategoryProductsComponent {
     private _storeService: StoreService,
     private _activatedRoute: ActivatedRoute,
     private _productService: ProductService,
-    private _router: Router,
     private _sortingValuesService: SortingValuesService,
-    private _queryParamsService: QueryParamsService
+    private _queryParamsService: QueryParamsService,
+    private _filterValuesService: FilterValuesService
   ) {}
 }

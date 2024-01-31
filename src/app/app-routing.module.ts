@@ -8,13 +8,18 @@ import { CategoryProductsComponentModule } from './components/category-products/
 import { StoreProductsComponentModule } from './components/store-products/store-products.component-module';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent }, 
-  { path: 'categories/:categoryId', component: CategoryProductsComponent }, 
-  { path: 'stores/:storeId', component: StoreProductsComponent }
+  { path: '', component: HomeComponent },
+  { path: 'categories/:categoryId', component: CategoryProductsComponent },
+  { path: 'stores/:storeId', component: StoreProductsComponent },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes), HomeComponentModule, CategoryProductsComponentModule, StoreProductsComponentModule],
+  imports: [
+    RouterModule.forRoot(routes),
+    HomeComponentModule,
+    CategoryProductsComponentModule,
+    StoreProductsComponentModule,
+  ],
   exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
