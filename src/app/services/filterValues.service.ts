@@ -26,10 +26,6 @@ export class FilterValuesService {
           priceTo: queryParams['priceTo'],
         };
       })
-      // tap((price: { priceFrom: string; priceTo: string }) =>
-      //   this.filterByPrice.patchValue(price)
-      // ),
-      // shareReplay(1)
     );
   }
 }
